@@ -60,28 +60,17 @@ new_project \
     -adv_options {VCCI_3.3_VOLTR:EXT} \
     -adv_options {VOLTR:EXT}
 
-if {[info exists CORE_UPDATE]} {
-    puts "In core update mode"
-    return
-}
-
-# stage 1 make and import HDL sources
+# Make and import HDL sources
 import_mss_component -file "./output/MSS/test_mss.cxz"
 
-# stage 4 generate smart design
+# Generate SmartDesign
 cd ./sources/HDL/base
 source ./base_recursive.tcl
 set_root -module {base::work} 
 cd ../../../
 
-# stage 5 import constraints
+# Import constraints
 source ./recipes/libero-project/constraints.tcl
-
-# stage 6 generate FPGA Array Data
-# select_profile -name {synplify} 
-# select_profile -name {sym} 
-
-# remove below regarding implementation
 
 # configure_tool \
 #     -name {SYNTHESIZE} \
@@ -110,14 +99,14 @@ source ./recipes/libero-project/constraints.tcl
 #     -params {SYNPLIFY_OPTIONS:} \
 #     -params {SYNPLIFY_TCL_FILE:} 
 
-# run_tool -name {EXPORTNETLIST} 
+# run_tool -name {EXPORTNETLIST}
 
-#organize_tool_files -tool {SIM_PRESYNTH} \
+# organize_tool_files -tool {SIM_PRESYNTH} \
     -file {} \
     -module {base::work} \
     -input_type {stimulus} 
 
-#run_tool -name {SIM_POSTSYNTH} 
+# run_tool -name {SIM_POSTSYNTH}
 
 # Max timing work first - no high effort, no min delay
 configure_tool -name {PLACEROUTE} \
@@ -143,53 +132,53 @@ run_tool -name {PLACEROUTE}
 
 # Check for max delay and min delay violations using timing verification
 
+run_tool -name {VERIFYTIMING}
+
 # if no max violations continue...
 
-# if min delay do this:
 # Min delay next in incremental
 configure_tool -name {PLACEROUTE} \
     -params {DELAY_ANALYSIS:MAX} \
     -params {EFFORT_LEVEL:false} \
     -params {GB_DEMOTION:true} \
-    -params {INCRPLACEANDROUTE:false} \
+    -params {INCRPLACEANDROUTE:true} \
     -params {IOREG_COMBINING:false} \
     -params {MULTI_PASS_CRITERIA:VIOLATIONS} \
     -params {MULTI_PASS_LAYOUT:false} \
-    -params {NUM_MULTI_PASSES:5} \
+    -params {NUM_MULTI_PASSES:25} \
     -params {PDPR:false} \
-    -params {RANDOM_SEED:0} \
+    -params {RANDOM_SEED:7} \
     -params {REPAIR_MIN_DELAY:true} \
     -params {REPLICATION:false} \
     -params {SLACK_CRITERIA:WORST_SLACK} \
     -params {SPECIFIC_CLOCK:} \
-    -params {START_SEED_INDEX:1} \
-    -params {STOP_ON_FIRST_PASS:false} \
-    -params {TDPR:true} 
+    -params {START_SEED_INDEX:9} \
+    -params {STOP_ON_FIRST_PASS:true} \
+    -params {TDPR:true}
 
-run_tool -name {PLACEROUTE} 
-#end
+run_tool -name {PLACEROUTE}
 
-run_tool -name {EXPORTSDF} 
+run_tool -name {VERIFYPOWER}
 
-organize_tool_files -tool {SIM_PRESYNTH} \
+# Should stop here on violations
+run_tool -name {VERIFYTIMING}
+
+# run_tool -name {EXPORTSDF}
+
+# organize_tool_files -tool {SIM_PRESYNTH} \
     -file {} \
     -module {base::work} \
     -input_type {stimulus} 
 
-run_tool -name {SIM_POSTLAYOUT} 
+# run_tool -name {SIM_POSTLAYOUT}
 
-# Should stop here on violations 
-run_tool -name {VERIFYTIMING}
+# run_tool -name {CONFIGURE_CHAIN}
 
-run_tool -name {VERIFYPOWER} 
-
-#run_tool -name {CONFIGURE_CHAIN} 
-
-#select_programmer -programmer_id {S2011K1YJJ} 
+# select_programmer -programmer_id {S2011K1YJJ}
 
 run_tool -name {GENERATEPROGRAMMINGDATA}
 
-# stage 7 import clients
+# Import clients
 create_eNVM_config "output/clients/HSS_ENVM.cfg" "../../output/HSS/hss-envm-wrapper-bm1-p0.hex"
 configure_envm -cfg_file "./output/clients/HSS_ENVM.cfg"
 
@@ -197,18 +186,18 @@ create_spi_config "output/clients/bare_metal_spi.cfg" "../../output/payload/spi.
 configure_spiflash -cfg_file "./output/clients/bare_metal_spi.cfg"
 generate_design_initialization_data 
 
-#
-configure_tool \
+
+# configure_tool \
          -name {IO_PROGRAMMING_STATE} \
          -params {ios_file:} 
 
-configure_tool \
+# configure_tool \
          -name {CONFIGURE_PROG_OPTIONS} \
          -params {back_level_version:0} \
          -params {design_version:0} \
          -params {silicon_signature:} 
 
-configure_tool \
+# configure_tool \
          -name {SPM} \
          -params {back_level_protection:true} \
          -params {debug_passkey:} \
@@ -359,13 +348,5 @@ export_prog_job \
          -prog_optional_procedures {} \
          -skip_recommended_procedures {} \
          -sanitize_snvm 0 \
-         -sanitize_envm 0 
-
-# Print version information
-#puts "Device has been programmed with the following:"
-#catch {exec ./recipies/assemble-revisions/assemble-revisions.sh}
-#set component_versions [open "revisions.txt" r]
-#set file_data [read $component_versions]
-
-#puts $file_data
-#close $component_versions
+         -sanitize_envm 0
+         

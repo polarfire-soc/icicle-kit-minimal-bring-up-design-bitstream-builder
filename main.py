@@ -1,4 +1,3 @@
-
 import os
 import yaml
 import git
@@ -7,25 +6,6 @@ import zipfile
 import io
 import shutil
 import subprocess
-import hashlib
-
-
-def generate_hash(file):
-    BLOCK_SIZE = 65536 # The size of each read from the file
-    file_hash = hashlib.sha256() # Create the hash object, can use something other than `.sha256()` if you wish
-    with open(file, 'rb') as f: # Open the file to read it's bytes
-        fb = f.read(BLOCK_SIZE) # Read from the file. Take in the amount declared above
-        while len(fb) > 0: # While there is still data being read from the file
-            file_hash.update(fb) # Update the hash
-            fb = f.read(BLOCK_SIZE) # Read the next block from the file
-
-    print (file_hash.hexdigest()) # Get the hexadecimal digest of the hash
-    return file_hash.hexdigest()
-
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
 
 # Update to also init enviroment variables
@@ -94,29 +74,22 @@ def make_hss(hss_source):
     build = " --build=hart-software-services/Default"
     native = " --native"
     softconsole_call = workspace + project + build + native
-    # set enviroment variables
-    PATH = os.environ["PATH"]
-    PATH = PATH + ":$HOME/Microchip/SoftConsole-v2021.3/python/bin:$HOME/Microchip/SoftConsole-v2021.3/riscv-unknown-elf-gcc/bin:$HOME/Microchip/SoftConsole-v2021.3/eclipse/jre/bin"
-    # Make the HSS
-    os.system("export PATH=" + PATH + " && export SC_INSTALL_DIR=$HOME/Microchip/SoftConsole-v2021.3 && export FPGENPROG=/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin64/fpgenprog &&" + softconsole_headless + softconsole_call)
+    os.system(softconsole_headless + softconsole_call)
     # copy the build artifact to the output directory
     shutil.copyfile("./sources/HSS/Default/bootmode1/hss-envm-wrapper-bm1-p0.hex", "./output/HSS/hss-envm-wrapper-bm1-p0.hex")
 
 
 # builds a bare metal project using softconsole
 def make_bare_metal(softconsole_headless, bare_metal_source):
-    # build the softconsole call
+    # create a softconsole call
     workspace = " --workspace=" + os.path.join(os.getcwd(), "output", "bare-metal", "workspace")
     project = " --import=" + os.path.join(bare_metal_source, "driver-examples/mss/mss-mmuart/mpfs-mmuart-interrupt/")
     build = " --build=mpfs-mmuart-interrupt/DDR-Release"
     native = " --native"
     softconsole_call = workspace + project + build + native
-    # Set environment variables
-    PATH = os.environ["PATH"]
-    PATH = PATH + ":$HOME/Microchip/SoftConsole-v2021.3/python/bin:$HOME/Microchip/SoftConsole-v2021.3/riscv-unknown-elf-gcc/bin:$HOME/Microchip/SoftConsole-v2021.3/eclipse/jre/bin"
     # build the project
-    os.system("export PATH=" + PATH + " && " + softconsole_headless + softconsole_call)
-    # copy the project output to the output directory
+    os.system(softconsole_headless + softconsole_call)
+    # copy the project artifact to the output directory
     shutil.copyfile("./sources/bare-metal-examples/driver-examples/mss/mss-mmuart/mpfs-mmuart-interrupt/DDR-Release/mpfs-mmuart-interrupt.elf", "./output/bare-metal/mpfs-mmuart-interrupt.elf" )
 
 
@@ -134,22 +107,30 @@ def make_hss_payload(payload_generator, config, destination):
 
 
 # Calls Libero and builds a project
-def make_libero_project(libero, script, libero_license):
-    os.system("export LM_LICENSE_FILE=" + libero_license + " && " + libero + " SCRIPT:" + script)
+def make_libero_project(libero, script):
+    os.system(libero + " SCRIPT:" + script)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    PATH = os.environ["PATH"]
-    PATH = PATH + ":$HOME/Microchip/SoftConsole-v2021.1/python/bin:$HOME/Microchip/SoftConsole-v2021.1/riscv-unknown-elf-gcc/bin"
-    os.environ["PATH"] = PATH
     sources = {}
-    libero_install_directory = "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/"
+    user_home = os.path.expanduser("~")
+
+    # Tool path variables
+    libero_install_directory = "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/" # This script is design to use Libero 2021.2
     mss_configurator = os.path.join(libero_install_directory, "bin64/pfsoc_mss")
     libero = os.path.join(libero_install_directory, "bin/libero")
-    libero_license = "1703@molalla.microsemi.net:1800@molalla.microsemi.net:1717@molalla.microsemi.net:1717@wilkie.microsemi.net:1800@wilkie.microsemi.net"
-    softconsole_headless = "/home/hugh/Microchip/SoftConsole-v2021.3/eclipse/softconsole-headless"
-    file_hashes = {}
+    softconsole_headless = user_home + "/Microchip/SoftConsole-v2021.3/eclipse/softconsole-headless" # This script is designed to use SoftConsole v2021.3
+
+    # Set enviroment variables required by tools
+
+    # SoftConsole #
+    os.environ["PATH"] = os.environ["PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3/python/bin:" + user_home + "/Microchip/SoftConsole-v2021.3/riscv-unknown-elf-gcc/bin:" + user_home + "/Microchip/SoftConsole-v2021.3/eclipse/jre/bin"
+    os.environ["SC_INSTALL_DIR"] = user_home + "/Microchip/SoftConsole-v2021.3"
+    os.environ["FPGENPROG"] = "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin64/fpgenprog"
+
+    # Libero #
+    os.environ["LM_LICENSE_FILE"] = "1703@molalla.microsemi.net:1800@molalla.microsemi.net:1717@molalla.microsemi.net:1717@wilkie.microsemi.net:1800@wilkie.microsemi.net"
 
     print("Initializing workspace")
     init_workspace()
@@ -171,14 +152,7 @@ if __name__ == '__main__':
                                                                                                                      "recipes/hss-payload/config.yaml"), os.path.join(os.getcwd(), "output/payload/spi.bin"))
 
     print("Generating Libero project")
-    make_libero_project(libero, "./recipes/libero-project/generate-project.tcl", libero_license)
+    make_libero_project(libero, "./recipes/libero-project/generate-project.tcl")
 
-    # for file in os.listdir("./output/final-files"):
-    #     file_hashes[file] = generate_hash(os.path.join("./output/final-files", file))
-    #
-    # report = open ("report.txt", "a+")
-    # for hash in file_hashes:
-    #     print(str(hash) + ": " + str(file_hashes[hash]))
-    #     report.write(str(hash) + ": " + str(file_hashes[hash]) + "\n")
+    print("Finished")
 
-  #  report.close()

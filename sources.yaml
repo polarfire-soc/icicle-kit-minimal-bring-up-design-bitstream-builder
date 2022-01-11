@@ -21,3 +21,5 @@ bare-metal-examples:
 #     type: [type]
 #     link: [link]
 #     branch: [name] # if using git as a type
+#     commit: [hash] # if using git, you can checkout a specific commit on a branch
+

@@ -28,8 +28,6 @@ if { $::argc > 0 } {
     }
 }
 
-catch {close_project -save 1}
-
 # Make the project
 new_project \
     -location $libero_project_directory \
@@ -72,42 +70,55 @@ cd ../../../
 # Import constraints
 source ./recipes/libero-project/constraints.tcl
 
-# configure_tool \
-#     -name {SYNTHESIZE} \
-#     -params {ACTIVE_IMPLEMENTATION:synthesis} \
-#     -params {AUTO_COMPILE_POINT:true} \
-#     -params {BLOCK_MODE:false} \
-#     -params {BLOCK_PLACEMENT_CONFLICTS:ERROR} \
-#     -params {BLOCK_ROUTING_CONFLICTS:LOCK} \
-#     -params {CDC_MIN_NUM_SYNC_REGS:2} \
-#     -params {CDC_REPORT:true} \
-#     -params {CLOCK_ASYNC:800} \
-#     -params {CLOCK_DATA:5000} \
-#     -params {CLOCK_GATE_ENABLE:false} \
-#     -params {CLOCK_GATE_ENABLE_THRESHOLD_GLOBAL:1000} \
-#     -params {CLOCK_GATE_ENABLE_THRESHOLD_ROW:100} \
-#     -params {CLOCK_GLOBAL:2} \
-#     -params {CREATE_IMPLEMENTATION_IDENTIFY:} 
-#     -params {CREATE_IMPLEMENTATION_SYNTHESIS:synthesis} \
-#     -params {PA4_GB_COUNT:36} \
-#     -params {PA4_GB_MAX_RCLKINT_INSERTION:16} \
-#     -params {PA4_GB_MIN_GB_FANOUT_TO_USE_RCLKINT:1000} \
-#     -params {RAM_OPTIMIZED_FOR_POWER:0} \
-#     -params {RETIMING:false} \
-#     -params {ROM_TO_LOGIC:true} \
-#     -params {SEQSHIFT_TO_URAM:1} \
-#     -params {SYNPLIFY_OPTIONS:} \
-#     -params {SYNPLIFY_TCL_FILE:} 
-
-# run_tool -name {EXPORTNETLIST}
-
 # organize_tool_files -tool {SIM_PRESYNTH} \
+    -file {} \
+    -module {base::work} \
+    -input_type {stimulus} 
+
+# run_tool -name {SIM_PRESYNTH}
+
+# Configure synthesis options
+# configure_tool \
+     -name {SYNTHESIZE} \
+     -params {ACTIVE_IMPLEMENTATION:synthesis} \
+     -params {AUTO_COMPILE_POINT:true} \
+     -params {BLOCK_MODE:false} \
+     -params {BLOCK_PLACEMENT_CONFLICTS:ERROR} \
+     -params {BLOCK_ROUTING_CONFLICTS:LOCK} \
+     -params {CDC_MIN_NUM_SYNC_REGS:2} \
+     -params {CDC_REPORT:true} \
+     -params {CLOCK_ASYNC:800} \
+     -params {CLOCK_DATA:5000} \
+     -params {CLOCK_GATE_ENABLE:false} \
+     -params {CLOCK_GATE_ENABLE_THRESHOLD_GLOBAL:1000} \
+     -params {CLOCK_GATE_ENABLE_THRESHOLD_ROW:100} \
+     -params {CLOCK_GLOBAL:2} \
+     -params {CREATE_IMPLEMENTATION_IDENTIFY:} \
+     -params {CREATE_IMPLEMENTATION_SYNTHESIS:synthesis} \
+     -params {PA4_GB_COUNT:36} \
+     -params {PA4_GB_MAX_RCLKINT_INSERTION:16} \
+     -params {PA4_GB_MIN_GB_FANOUT_TO_USE_RCLKINT:1000} \
+     -params {RAM_OPTIMIZED_FOR_POWER:0} \
+     -params {RETIMING:false} \
+     -params {ROM_TO_LOGIC:true} \
+     -params {SEQSHIFT_TO_URAM:1} \
+     -params {SYNPLIFY_OPTIONS:} \
+     -params {SYNPLIFY_TCL_FILE:} 
+
+# Run synthesis
+run_tool -name {SYNTHESIZE}
+
+# organize_tool_files -tool {SIM_POSTSYNTH} \
     -file {} \
     -module {base::work} \
     -input_type {stimulus} 
 
 # run_tool -name {SIM_POSTSYNTH}
 
+# Export the netlist
+# run_tool -name {EXPORTNETLIST}
+
+# Timing verification 
 # Max timing work first - no high effort, no min delay
 configure_tool -name {PLACEROUTE} \
     -params {DELAY_ANALYSIS:MAX} \
@@ -158,14 +169,14 @@ configure_tool -name {PLACEROUTE} \
 
 run_tool -name {PLACEROUTE}
 
-run_tool -name {VERIFYPOWER}
-
-# Should stop here on violations
+# Finial timing check - should stop here on violations
 run_tool -name {VERIFYTIMING}
+
+run_tool -name {VERIFYPOWER}
 
 # run_tool -name {EXPORTSDF}
 
-# organize_tool_files -tool {SIM_PRESYNTH} \
+# organize_tool_files -tool {SIM_POSTLAYOUT} \
     -file {} \
     -module {base::work} \
     -input_type {stimulus} 
@@ -229,15 +240,15 @@ generate_design_initialization_data
 
 run_tool -name {GENERATEPROGRAMMINGFILE} 
 
-# Program the SPI first so the device is reset after bitstream programming to boot this payload
-run_tool -name {GENERATE_SPI_FLASH_IMAGE} 
-run_tool -name {PROGRAM_SPI_FLASH_IMAGE} 
+# # Program the SPI first so the device is reset after bitstream programming to boot this payload
+# run_tool -name {GENERATE_SPI_FLASH_IMAGE} 
+# run_tool -name {PROGRAM_SPI_FLASH_IMAGE} 
 
-configure_tool -name {CONFIGURE_ACTION_PROCEDURES} \
-         -params {prog_optional_procedures:""} \
-         -params {skip_recommended_procedures:""} 
+# configure_tool -name {CONFIGURE_ACTION_PROCEDURES} \
+#          -params {prog_optional_procedures:""} \
+#          -params {skip_recommended_procedures:""} 
 
-run_tool -name {PROGRAMDEVICE}
+# run_tool -name {PROGRAMDEVICE}
 
 run_tool -name {GENERATEDEBUGDATA} 
 

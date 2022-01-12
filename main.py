@@ -139,7 +139,7 @@ def make_hss_payload(payload_generator, config, destination):
 
 
 # Calls Libero and builds a project
-def make_libero_project(libero, script):
+def run_libero(libero, script):
     os.system(libero + " SCRIPT:" + script)
 
 
@@ -149,10 +149,10 @@ if __name__ == '__main__':
     user_home = os.path.expanduser("~")
 
     # Tool path variables
-    libero_install_directory = "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/"  # This script is design to use Libero 2021.2
+    libero_install_directory = "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/"  # This script is design to use Libero 2021.2 - update this path if there is an issue locating Libero or the MSS configurator
     mss_configurator = os.path.join(libero_install_directory, "bin64/pfsoc_mss")
     libero = os.path.join(libero_install_directory, "bin/libero")
-    softconsole_headless = user_home + "/Microchip/SoftConsole-v2021.3/eclipse/softconsole-headless"  # This script is designed to use SoftConsole v2021.3
+    softconsole_headless = user_home + "/Microchip/SoftConsole-v2021.3/eclipse/softconsole-headless"  # This script is designed to use SoftConsole v2021.3 - update this path if there is an issue locating softconsole
 
     if not os.path.isfile(mss_configurator):
         print("Error: path to MSS configurator is incorrect!")
@@ -174,7 +174,7 @@ if __name__ == '__main__':
     os.environ["SC_INSTALL_DIR"] = user_home + "/Microchip/SoftConsole-v2021.3"
     os.environ["FPGENPROG"] = "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin64/fpgenprog"
 
-    # Libero #
+    # Libero - note: update the value of this variable to point to a different license if required #
     os.environ[
         "LM_LICENSE_FILE"] = "1703@molalla.microsemi.net:1800@molalla.microsemi.net:1717@molalla.microsemi.net:1717@wilkie.microsemi.net:1800@wilkie.microsemi.net"
 
@@ -200,7 +200,10 @@ if __name__ == '__main__':
                      os.path.join(os.getcwd(), "output/payload/spi.bin"))
 
     print("Generating Libero project")
-    make_libero_project(libero, "./recipes/libero-project/generate-project.tcl")
+    run_libero(libero, "./recipes/libero-project/generate-project.tcl")
+
+    print("Programming device")
+    run_libero(libero, "./recipes/libero-project/program-device.tcl")
 
     print("Finished")
 

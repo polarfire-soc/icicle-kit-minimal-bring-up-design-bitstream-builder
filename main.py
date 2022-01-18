@@ -10,7 +10,8 @@ import subprocess
 
 # Creates required folders and removes artifacts before beginning
 def init_workspace():
-    # Create the sources folder to clone into if it doesn't exist (any existing source folders are handled in the clone_sources function)
+    # Create the sources folder to clone into if it doesn't exist (any existing source folders are handled in the
+    # clone_sources function)
     if not os.path.exists("./sources"):
         os.mkdir("./sources")
 
@@ -139,45 +140,79 @@ def make_hss_payload(payload_generator, config, destination):
 
 
 # Calls Libero and builds a project
-def run_libero(libero, script):
+def make_libero_project(libero, script):
     os.system(libero + " SCRIPT:" + script)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    sources = {}
+    # The following section can be used to set up paths and environment variables used by these scripts with typical values
+    # It is recommended to set these environment variables outside the script environment on the host PC
     user_home = os.path.expanduser("~")
-
-    # Tool path variables
-    libero_install_directory = "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/"  # This script is design to use Libero 2021.2 - update this path if there is an issue locating Libero or the MSS configurator
-    mss_configurator = os.path.join(libero_install_directory, "bin64/pfsoc_mss")
-    libero = os.path.join(libero_install_directory, "bin/libero")
-    softconsole_headless = user_home + "/Microchip/SoftConsole-v2021.3/eclipse/softconsole-headless"  # This script is designed to use SoftConsole v2021.3 - update this path if there is an issue locating softconsole
-
-    if not os.path.isfile(mss_configurator):
-        print("Error: path to MSS configurator is incorrect!")
-        exit()
-
-    if not os.path.isfile(libero):
-        print("Error: path to Libero installation is incorrect!")
-        exit()
-
-    if not os.path.isfile(softconsole_headless):
-        print("Error: path to SoftConsole headless is incorrect!")
-        exit()
-
-    # Set enviroment variables required by tools
-
-    # SoftConsole #
-    os.environ["PATH"] = os.environ[
-                             "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3/python/bin:" + user_home + "/Microchip/SoftConsole-v2021.3/riscv-unknown-elf-gcc/bin:" + user_home + "/Microchip/SoftConsole-v2021.3/eclipse/jre/bin"
-    os.environ["SC_INSTALL_DIR"] = user_home + "/Microchip/SoftConsole-v2021.3"
+    os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin/"
+    os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin64/"
+    os.environ["PATH"] = os.environ["PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/"
+    os.environ["PATH"] = os.environ["PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/python/bin"
+    os.environ["PATH"] = os.environ["PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/riscv-unknown-elf-gcc/bin"
+    os.environ["PATH"] = os.environ["PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/jre/bin"
     os.environ["FPGENPROG"] = "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin64/fpgenprog"
+    os.environ["SC_INSTALL_DIR"] = user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599"
+    os.environ["LM_LICENSE_FILE"] = "1703@molalla.microsemi.net:1800@molalla.microsemi.net:1717@molalla.microsemi.net" \
+                                    ":1717@wilkie.microsemi.net:1800@wilkie.microsemi.net "
 
-    # Libero - note: update the value of this variable to point to a different license if required #
-    os.environ[
-        "LM_LICENSE_FILE"] = "1703@molalla.microsemi.net:1800@molalla.microsemi.net:1717@molalla.microsemi.net:1717@wilkie.microsemi.net:1800@wilkie.microsemi.net"
+    if shutil.which("libero") is None:
+        print("Error: libero not found in path")
+        exit()
 
+    if shutil.which("pfsoc_mss") is None:
+        print("Error: polarfire soc mss configurator not found in path")
+        exit()
+
+    if shutil.which("softconsole-headless") is None:
+        print("Error: softconsole headless not found in path")
+        exit()
+
+    if os.environ.get('LM_LICENSE_FILE') is None:
+        print("Error: no libero license found")
+        exit()
+
+    if os.environ.get('SC_INSTALL_DIR') is None:
+        print(
+            "Error: SC_INSTALL_DIR enviroment variable not set, please set this variable and point it to the "
+            "appropriate SoftConsole insatllation directory to run this script")
+        exit()
+
+    if os.environ.get('FPGENPROG') is None:
+        print(
+            "Error: FPGENPROG enviroment variable not set, please set this variable and point it to the appropriate "
+            "FPGENPROG executable to run this script")
+        exit()
+
+    path = os.environ["PATH"]
+
+    if "/python/bin" not in path:
+        print(
+            "The path to the SoftConsole python installation needs to be set in PATH to run this script")
+        exit()
+
+    if "/riscv-unknown-elf-gcc/bin" not in path:
+        print(
+            "The path to the RISC-V toolchain needs to be set in PATH to run this script")
+        exit()
+
+    if "/eclipse/jre/bin" not in path:
+        print(
+            "The path to the SoftConsole Java installation needs to be set in PATH to run this script")
+        exit()
+
+    sources = {}
+
+    # Tool call variables
+    mss_configurator = "pfsoc_mss"
+    libero = "libero"
+    softconsole_headless = "softconsole-headless"
+
+    # Generating the design
     print("Initializing workspace")
     init_workspace()
 
@@ -200,10 +235,6 @@ if __name__ == '__main__':
                      os.path.join(os.getcwd(), "output/payload/spi.bin"))
 
     print("Generating Libero project")
-    run_libero(libero, "./recipes/libero-project/generate-project.tcl")
-
-    print("Programming device")
-    run_libero(libero, "./recipes/libero-project/program-device.tcl")
+    make_libero_project(libero, "./recipes/libero-project/generate-project.tcl")
 
     print("Finished")
-

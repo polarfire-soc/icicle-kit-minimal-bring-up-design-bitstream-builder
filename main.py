@@ -5,7 +5,6 @@ import requests
 import zipfile
 import io
 import shutil
-import subprocess
 
 
 # Creates required folders and removes artifacts before beginning
@@ -75,7 +74,7 @@ def clone_sources(source_list):
 
 # calls the MSS configurator and generates an MSS configuration in a directory based on a cfg file
 def make_mss_config(mss_configurator, config_file, output_dir):
-    subprocess.call(mss_configurator + ' -CONFIGURATION_FILE:' + config_file + ' -OUTPUT_DIR:' + output_dir, shell=True)
+    os.system(mss_configurator + ' -CONFIGURATION_FILE:' + config_file + ' -OUTPUT_DIR:' + output_dir)
 
 
 # Builds the HSS using a pre-defined config file using SoftConsole in headless mode

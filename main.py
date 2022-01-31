@@ -1,4 +1,5 @@
 import os
+import platform
 import yaml
 import git
 import requests
@@ -128,88 +129,115 @@ def make_hss_payload(payload_generator, config, destination):
     top_dir = os.getcwd()
     os.chdir(payload_generator)
 
-    # make sure the tool is executable (we download and extract it as a zip source)
-    os.system("chmod +x ./hss-payload-generator")
+# Switch here for Windows or Linux for the tool call
+    if platform.system() == "Linux" or platform.system() == "Linux2":
+        # make sure the tool is executable (we download and extract it as a zip source)
+        os.system("chmod +x ./hss-payload-generator")
 
-    # Generate the payload with the output going to the output directory
-    os.system("./hss-payload-generator -c " + config + " " + destination)
+        # Generate the payload with the output going to the output directory
+        os.system("./hss-payload-generator -c " + config + " " + destination)
+
+    elif platform.system() == "win32" or platform.system() == "win64" or "_NT" in platform.system() or platform.system() == "Windows":
+        os.system("hss-payload-generator.exe -c " + config + " " + destination)
 
     # Change back to the original directory
     os.chdir(top_dir)
 
 
-# Calls Libero and builds a project
-def make_libero_project(libero, script):
+# Calls Libero and runs a script
+def call_libero(libero, script):
     os.system(libero + " SCRIPT:" + script)
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    # The following section can be used to set up paths and environment variables used by these scripts with typical values
-    # It is recommended to set these environment variables outside the script environment on the host PC
-    user_home = os.path.expanduser("~")
-    os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin/"
-    os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin64/"
-    os.environ["PATH"] = os.environ["PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/"
-    os.environ["PATH"] = os.environ["PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/python/bin"
-    os.environ["PATH"] = os.environ["PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/riscv-unknown-elf-gcc/bin"
-    os.environ["PATH"] = os.environ["PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/jre/bin"
-    os.environ["FPGENPROG"] = "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin64/fpgenprog"
-    os.environ["SC_INSTALL_DIR"] = user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599"
-    os.environ["LM_LICENSE_FILE"] = "1703@molalla.microsemi.net:1800@molalla.microsemi.net:1717@molalla.microsemi.net" \
-                                    ":1717@wilkie.microsemi.net:1800@wilkie.microsemi.net "
+    # Check host system
+    print("This is a " + platform.system() + " system.")
 
-    if shutil.which("libero") is None:
-        print("Error: libero not found in path")
-        exit()
+    # Set up paths for Linux and check tools are available
+    if platform.system() == "Linux" or platform.system() == "Linux2":
+        # The following section can be used to set up paths and environment variables used by these scripts with typical values
+        # It is recommended to set these environment variables outside the script environment on the host PC
+        user_home = os.path.expanduser("~")
+        os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin/"
+        os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin64/"
+        os.environ["PATH"] = os.environ["PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/"
+        os.environ["PATH"] = os.environ[
+                                 "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/python/bin"
+        os.environ["PATH"] = os.environ[
+                                 "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/riscv-unknown-elf-gcc/bin"
+        os.environ["PATH"] = os.environ[
+                                 "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/jre/bin"
+        os.environ["FPGENPROG"] = "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin64/fpgenprog"
+        os.environ["SC_INSTALL_DIR"] = user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599"
+        os.environ[
+            "LM_LICENSE_FILE"] = "1703@molalla.microsemi.net:1800@molalla.microsemi.net:1717@molalla.microsemi.net" \
+                                 ":1717@wilkie.microsemi.net:1800@wilkie.microsemi.net "
+        if shutil.which("libero") is None:
+            print("Error: libero not found in path")
+            exit()
 
-    if shutil.which("pfsoc_mss") is None:
-        print("Error: polarfire soc mss configurator not found in path")
-        exit()
+        if shutil.which("pfsoc_mss") is None:
+            print("Error: polarfire soc mss configurator not found in path")
+            exit()
 
-    if shutil.which("softconsole-headless") is None:
-        print("Error: softconsole headless not found in path")
-        exit()
+        if shutil.which("softconsole-headless") is None:
+            print("Error: softconsole headless not found in path")
+            exit()
 
-    if os.environ.get('LM_LICENSE_FILE') is None:
-        print("Error: no libero license found")
-        exit()
+        if os.environ.get('LM_LICENSE_FILE') is None:
+            print("Error: no libero license found")
+            exit()
 
-    if os.environ.get('SC_INSTALL_DIR') is None:
-        print(
-            "Error: SC_INSTALL_DIR enviroment variable not set, please set this variable and point it to the "
-            "appropriate SoftConsole insatllation directory to run this script")
-        exit()
+        if os.environ.get('SC_INSTALL_DIR') is None:
+            print(
+                "Error: SC_INSTALL_DIR enviroment variable not set, please set this variable and point it to the "
+                "appropriate SoftConsole insatllation directory to run this script")
+            exit()
 
-    if os.environ.get('FPGENPROG') is None:
-        print(
-            "Error: FPGENPROG enviroment variable not set, please set this variable and point it to the appropriate "
-            "FPGENPROG executable to run this script")
-        exit()
+        if os.environ.get('FPGENPROG') is None:
+            print(
+                "Error: FPGENPROG enviroment variable not set, please set this variable and point it to the appropriate "
+                "FPGENPROG executable to run this script")
+            exit()
 
-    path = os.environ["PATH"]
+        path = os.environ["PATH"]
 
-    if "/python/bin" not in path:
-        print(
-            "The path to the SoftConsole python installation needs to be set in PATH to run this script")
-        exit()
+        if "/python/bin" not in path:
+            print(
+                "The path to the SoftConsole python installation needs to be set in PATH to run this script")
+            exit()
 
-    if "/riscv-unknown-elf-gcc/bin" not in path:
-        print(
-            "The path to the RISC-V toolchain needs to be set in PATH to run this script")
-        exit()
+        if "/riscv-unknown-elf-gcc/bin" not in path:
+            print(
+                "The path to the RISC-V toolchain needs to be set in PATH to run this script")
+            exit()
 
-    if "/eclipse/jre/bin" not in path:
-        print(
-            "The path to the SoftConsole Java installation needs to be set in PATH to run this script")
-        exit()
+        if "/eclipse/jre/bin" not in path:
+            print(
+                "The path to the SoftConsole Java installation needs to be set in PATH to run this script")
+            exit()
+
+        # Tool call variables - these are the names of the tools to run which will be called from os.system. 
+        # Full paths could be used here instead of assuming tools are in PATH
+        mss_configurator = "pfsoc_mss"
+        libero = "libero"
+        softconsole_headless = "softconsole-headless"
+
+    # Set up paths for Windows using full paths as tool names.
+    # Default installation directories used below
+    elif platform.system() == "win32" or platform.system() == "win64" or "_NT" in platform.system() or platform.system() == "Windows":
+        mss_configurator = "C:\\Microsemi\\Libero_SoC_v2021.2\\Designer\\bin64\\pfsoc_mss.exe"
+        libero = "C:\\Microsemi\\Libero_SoC_v2021.2\\Designer\\bin\\libero.exe"
+
+        if not os.path.isfile(libero):
+            print("Error: libero not found")
+            exit()
+
+        if not os.path.isfile(mss_configurator) is None:
+            print("Error: polarfire soc mss configurator not found")
+            exit()
 
     sources = {}
-
-    # Tool call variables
-    mss_configurator = "pfsoc_mss"
-    libero = "libero"
-    softconsole_headless = "softconsole-headless"
 
     # Generating the design
     print("Initializing workspace")
@@ -221,19 +249,43 @@ if __name__ == '__main__':
     print("Generating MSS configuration")
     make_mss_config(mss_configurator, "./sources/HDL/MSS/vcs_mss.cfg", os.path.join(os.getcwd(), "output/MSS"))
 
-    print("Building HSS")
-    make_hss(sources["HSS"])
+    # SoftConsole headless is only available on Linux 
+    # Build the HSS and bare metal using it when on Linux
+    # The payload generator needs a different config file for windows and linux due to paths.
+    if platform.system() == "Linux" or platform.system() == "Linux2":
+        print("Building HSS")
+        make_hss(sources["HSS"])
 
-    print("Building bare metal")
-    make_bare_metal(softconsole_headless, sources["bare-metal-examples"])
+        print("Building bare metal")
+        make_bare_metal(softconsole_headless, sources["bare-metal-examples"])
 
-    print("Generating HSS payload")
-    make_hss_payload(os.path.join(sources["HSS-payload-generator"], "hss-payload-generator/binaries/"),
-                     os.path.join(os.getcwd(),
-                                  "recipes/hss-payload/config.yaml"),
-                     os.path.join(os.getcwd(), "output/payload/spi.bin"))
+        print("Generating HSS payload")
+        make_hss_payload(os.path.join(sources["HSS-payload-generator"], "hss-payload-generator/binaries/"),
+                         os.path.join(os.getcwd(),
+                                      "recipes/hss-payload/config_lin.yaml"),
+                         os.path.join(os.getcwd(), "output/payload/spi.bin"))
+
+    # If we're on Windows use the pre-built HSS and bare metal executables.
+    # The HSS payload generator needs a windows specific config file for paths.
+    elif platform.system() == "win32" or platform.system() == "win64" or "_NT" in platform.system() or platform.system() == "Windows":
+        print("Using pre-built HSS")
+        shutil.copyfile(
+            os.path.join(os.getcwd(), "sources/pre-built-executables/vcs_demo_artifacts/hss-envm-wrapper-bm1-p0.hex"),
+            os.path.join(os.getcwd(), "output/HSS/hss-envm-wrapper-bm1-p0.hex"))
+
+        print("Using pre-built bare metal")
+        shutil.copyfile(
+            os.path.join(os.getcwd(), "sources/pre-built-executables/vcs_demo_artifacts/mpfs-mmuart-interrupt.elf"),
+            os.path.join(os.getcwd(), "./output/bare-metal/mpfs-mmuart-interrupt.elf"))
+
+        print("Generating HSS payload")
+        make_hss_payload(os.path.join(sources["HSS-payload-generator"], "hss-payload-generator/binaries/"),
+                         os.path.join(os.getcwd(),
+                                      "recipes/hss-payload/config_win.yaml"),
+                         os.path.join(os.getcwd(), "output/payload/spi.bin"))
 
     print("Generating Libero project")
-    make_libero_project(libero, "./recipes/libero-project/generate-project.tcl")
+    print(str(os.path.join(os.getcwd(), "recipes/libero-project/generate-project.tcl")))
+    call_libero(libero, os.path.join(os.getcwd(), "recipes/libero-project/generate-project.tcl"))
 
     print("Finished")

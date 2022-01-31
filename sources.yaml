@@ -1,4 +1,7 @@
 ---
+pre-built-executables:
+    type: zip
+    link: https://microchiptechnology-my.sharepoint.com/:u:/g/personal/hugh_breslin_microchip_com/ETsITxrZtTxMm_cegzsk5aMB04jVvet-iHExmzI9fZn-Ng?e=tLGDUq&download=1
 HSS:
     type: git
     link: https://bitbucket.microchip.com/scm/fpga_pfsoc_es/hart-software-services.git

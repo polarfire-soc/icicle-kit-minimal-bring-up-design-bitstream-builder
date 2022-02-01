@@ -404,11 +404,12 @@ if __name__ == '__main__':
 
         print("Exporting output files to the output/final-files directory")
         call_libero(libero, os.path.join(os.getcwd(), "recipes/libero-project/export-data.tcl"))
+
+        if programming:
+            print("Programming target")
+            call_libero(libero, os.path.join(os.getcwd(), "recipes/libero-project/program-device.tcl"))
+            
     else:
         print("The libero project has been generated and can now be opened by opening the project file in the output/libero_project directory")
-
-    if programming:
-        print("Programming target")
-        call_libero(libero, os.path.join(os.getcwd(), "recipes/libero-project/program-device.tcl"))
 
     print("Finished")

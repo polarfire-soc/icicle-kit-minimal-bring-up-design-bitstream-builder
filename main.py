@@ -358,7 +358,6 @@ if __name__ == '__main__':
                          os.path.join(os.getcwd(), "output/payload/spi.bin"))
 
     print("Generating Libero project")
-    print(str(os.path.join(os.getcwd(), "recipes/libero-project/generate-project.tcl")))
     call_libero(libero, os.path.join(os.getcwd(), "recipes/libero-project/generate-project.tcl"))
 
     print("Finished")

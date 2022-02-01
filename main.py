@@ -1,11 +1,96 @@
+import argparse
+import io
 import os
 import platform
-import yaml
+import shutil
+import zipfile
+
 import git
 import requests
-import zipfile
-import io
-import shutil
+import yaml
+
+
+# Parse command line arguments
+def parse_args_linux():
+    # Initialize parser
+    parser = argparse.ArgumentParser()
+    
+    # Adding optional arguments
+    parser.add_argument("-LIB_SOC_DIR", "--Libero_SoC_Install_Directory", help = "Install directory for Libero SoC v2021.3 to be used when running this script")
+    parser.add_argument("-SC_DIR", "--SoftConsole_Install_Directory", help = "Install directory for SoftConsole v2021.3 to be used when running this script")
+    parser.add_argument("-LM_LIC", "--LM_License_File", help = "LM License to be used when running Libero as part of this script")
+    
+    # Read arguments from command line
+    args = parser.parse_args()
+
+    user_home = os.path.expanduser("~")
+    if args.Libero_SoC_Install_Directory:
+        os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.join(str(args.Libero_SoC_Install_Directory) + "Libero/bin/")
+        os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.join(str(args.Libero_SoC_Install_Directory) + "Libero/bin64/")
+        if os.environ.get('FPGENPROG') is None:
+            os.environ["FPGENPROG"] =os.path.join(str(args.Libero_SoC_Install_Directory) + "Libero/bin64/fpgenprog")
+    elif "Libero/bin/" not in os.environ["PATH"]:
+        print("Libero path not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
+        os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.3/Libero/bin/"
+        os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.3/Libero/bin64/"
+    
+    if os.environ.get('FPGENPROG') is None:
+        print("FPGENPROG enviroment variable is not set - attempting to use default path for v2021.3")
+        os.environ["FPGENPROG"] = "/usr/local/microsemi/Libero_SoC_v2021.3/Libero/bin64/fpgenprog"
+
+    if args.SoftConsole_Install_Directory:
+        if os.environ.get('SC_INSTALL_DIR') is None:
+            os.environ["SC_INSTALL_DIR"] = str(args.SoftConsole_Install_Directory)
+        os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.join(str(args.SoftConsole_Install_Directory) + "eclipse/")
+        os.environ["PATH"] = os.environ[
+                                "PATH"] + ":" + os.path.join(str(args.SoftConsole_Install_Directory) + "python/bin")
+        os.environ["PATH"] = os.environ[
+                                "PATH"] + ":" + os.path.join(str(args.SoftConsole_Install_Directory) + "riscv-unknown-elf-gcc/bin")
+        os.environ["PATH"] = os.environ[
+                                "PATH"] + ":" + os.path.join(str(args.SoftConsole_Install_Directory) + "eclipse/jre/bin")
+    elif "SoftConsole" not in os.environ["PATH"]:
+        print("SoftConsole path not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
+        os.environ["PATH"] = os.environ["PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/"
+        os.environ["PATH"] = os.environ[
+                                "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/python/bin"
+        os.environ["PATH"] = os.environ[
+                                "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/riscv-unknown-elf-gcc/bin"
+        os.environ["PATH"] = os.environ[
+                                "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/jre/bin"
+
+    if os.environ.get('SC_INSTALL_DIR') is None:
+        print("SC_INSTALL_DIR enviroment variable is not set - attempting to use default path for v2021.3")
+        os.environ["SC_INSTALL_DIR"] = user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599"
+
+    if args.LM_License_File:
+        os.environ[
+        "LM_LICENSE_FILE"] = str(args.LM_License_File)
+
+
+def parse_args_windows():
+    global libero
+    global mss_configurator
+    # Initialize parser
+    parser = argparse.ArgumentParser()
+    
+    # Adding optional argument
+    parser.add_argument("-libero", "--Libero_SoC_Executable", help = "Location of the Libero SoC v2021.3 executable to be used when running this script")
+    parser.add_argument("-pfsoc_mss", "--PolarFire_SoC_MSS_Configurator_Executable", help = "Location of the PolarFire SoC MSS Configurator executable to be used when running this script")
+    
+    # Read arguments from command line
+    args = parser.parse_args()
+
+    if args.Libero_SoC_Executable:
+        libero = args.Libero_SoC_Executable
+    elif "Libero_SoC_v2021.3\\Designer\\bin\\libero.exe" not in os.environ["PATH"]:
+        print("Libero executable not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
+        libero = "C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe"
+
+    if args.PolarFire_SoC_MSS_Configurator_Executable:
+        mss_configurator = args.PolarFire_SoC_MSS_Configurator_Executable
+    elif "Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe" not in os.environ["PATH"]:
+        print("PolarFire SoC MSS Configurator executable not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
+        mss_configurator = "C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe"
 
 
 # Creates required folders and removes artifacts before beginning
@@ -150,6 +235,8 @@ def call_libero(libero, script):
 
 
 if __name__ == '__main__':
+    global libero
+    global mss_configurator
     # Check host system
     print("This is a " + platform.system() + " system.")
 
@@ -157,21 +244,8 @@ if __name__ == '__main__':
     if platform.system() == "Linux" or platform.system() == "Linux2":
         # The following section can be used to set up paths and environment variables used by these scripts with typical values
         # It is recommended to set these environment variables outside the script environment on the host PC
-        user_home = os.path.expanduser("~")
-        os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin/"
-        os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin64/"
-        os.environ["PATH"] = os.environ["PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/"
-        os.environ["PATH"] = os.environ[
-                                 "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/python/bin"
-        os.environ["PATH"] = os.environ[
-                                 "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/riscv-unknown-elf-gcc/bin"
-        os.environ["PATH"] = os.environ[
-                                 "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/jre/bin"
-        os.environ["FPGENPROG"] = "/usr/local/microsemi/Libero_SoC_v2021.2/Libero/bin64/fpgenprog"
-        os.environ["SC_INSTALL_DIR"] = user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599"
-        os.environ[
-            "LM_LICENSE_FILE"] = "1703@molalla.microsemi.net:1800@molalla.microsemi.net:1717@molalla.microsemi.net" \
-                                 ":1717@wilkie.microsemi.net:1800@wilkie.microsemi.net "
+        parse_args_linux()
+
         if shutil.which("libero") is None:
             print("Error: libero not found in path")
             exit()
@@ -226,14 +300,13 @@ if __name__ == '__main__':
     # Set up paths for Windows using full paths as tool names.
     # Default installation directories used below
     elif platform.system() == "win32" or platform.system() == "win64" or "_NT" in platform.system() or platform.system() == "Windows":
-        mss_configurator = "C:\\Microsemi\\Libero_SoC_v2021.2\\Designer\\bin64\\pfsoc_mss.exe"
-        libero = "C:\\Microsemi\\Libero_SoC_v2021.2\\Designer\\bin\\libero.exe"
+        parse_args_windows()
 
         if not os.path.isfile(libero):
             print("Error: libero not found")
             exit()
 
-        if not os.path.isfile(mss_configurator) is None:
+        if not os.path.isfile(mss_configurator):
             print("Error: polarfire soc mss configurator not found")
             exit()
 

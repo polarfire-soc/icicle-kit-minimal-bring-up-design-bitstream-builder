@@ -254,7 +254,7 @@ def make_hss_payload(payload_generator, config, destination):
         # Generate the payload with the output going to the output directory
         os.system("./hss-payload-generator -c " + config + " " + destination)
 
-    elif platform.system() == "win32" or platform.system() == "win64" or "_NT" in platform.system() or platform.system() == "Windows":
+    else:
         os.system("hss-payload-generator.exe -c " + config + " " + destination)
 
     # Change back to the original directory
@@ -333,7 +333,7 @@ if __name__ == '__main__':
 
     # Set up paths for Windows using full paths as tool names.
     # Default installation directories used below
-    elif platform.system() == "win32" or platform.system() == "win64" or "_NT" in platform.system() or platform.system() == "Windows":
+    elif platform.system() == "Windows":
         parse_args_windows()
 
         if not os.path.isfile(libero):
@@ -343,6 +343,9 @@ if __name__ == '__main__':
         if not os.path.isfile(mss_configurator):
             print("Error: polarfire soc mss configurator not found")
             exit()
+    
+    else:
+        print("This does not appear to be a supported platform.")
 
     sources = {}
 
@@ -375,7 +378,7 @@ if __name__ == '__main__':
 
         # If we're on Windows use the pre-built HSS and bare metal executables.
         # The HSS payload generator needs a windows specific config file for paths.
-        elif platform.system() == "win32" or platform.system() == "win64" or "_NT" in platform.system() or platform.system() == "Windows":
+        else:
             print("Using pre-built HSS")
             shutil.copyfile(
                 os.path.join(os.getcwd(), "sources/pre-built-executables/vcs_demo_artifacts/hss-envm-wrapper-bm1-p0.hex"),

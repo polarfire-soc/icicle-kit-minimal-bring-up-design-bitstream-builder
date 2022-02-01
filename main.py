@@ -12,13 +12,19 @@ import yaml
 
 # Parse command line arguments
 def parse_args_linux():
+    global programming
+    global update
     # Initialize parser
     parser = argparse.ArgumentParser()
     
-    # Adding optional arguments
+    # Adding tool path arguments
     parser.add_argument("-LIB_SOC_DIR", "--Libero_SoC_Install_Directory", help = "Install directory for Libero SoC v2021.3 to be used when running this script")
     parser.add_argument("-SC_DIR", "--SoftConsole_Install_Directory", help = "Install directory for SoftConsole v2021.3 to be used when running this script")
     parser.add_argument("-LM_LIC", "--LM_License_File", help = "LM License to be used when running Libero as part of this script")
+
+    # Adding flow arguments
+    parser.add_argument("-PROG", "--Program", help = 'Passing this argument and "True" will attempt programming of a connected target (Icicle Kit) once the bitstream has been built')
+    parser.add_argument("-UPDATE", "--Design_Update", help = 'Passing this argument will run the flow so that a desin is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
     
     # Read arguments from command line
     args = parser.parse_args()
@@ -66,17 +72,33 @@ def parse_args_linux():
         os.environ[
         "LM_LICENSE_FILE"] = str(args.LM_License_File)
 
+    if "true" in str(args.Program).lower():
+        programming = True
+    else:
+        programming = False
+
+    if "true" in str(args.Design_Update).lower():
+        update = True
+    else:
+        update = False
+
 
 def parse_args_windows():
     global libero
     global mss_configurator
+    global programming
+    global update
     # Initialize parser
     parser = argparse.ArgumentParser()
     
-    # Adding optional argument
+    # Adding tool path arguments
     parser.add_argument("-libero", "--Libero_SoC_Executable", help = "Location of the Libero SoC v2021.3 executable to be used when running this script")
     parser.add_argument("-pfsoc_mss", "--PolarFire_SoC_MSS_Configurator_Executable", help = "Location of the PolarFire SoC MSS Configurator executable to be used when running this script")
     
+    # Adding flow arguments
+    parser.add_argument("-PROG", "--Program", help = 'Passing this argument and "True" will attempt programming of a connected target (Icicle Kit) once the bitstream has been built')
+    parser.add_argument("-UPDATE", "--Design_Update", help = 'Passing this argument will run the flow so that a desin is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
+
     # Read arguments from command line
     args = parser.parse_args()
 
@@ -91,6 +113,16 @@ def parse_args_windows():
     elif "Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe" not in os.environ["PATH"]:
         print("PolarFire SoC MSS Configurator executable not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
         mss_configurator = "C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe"
+    
+    if "true" in str(args.Program).lower():
+        programming = True
+    else:
+        programming = False
+
+    if "true" in str(args.Design_Update).lower():
+        update = True
+    else:
+        update = False
 
 
 # Creates required folders and removes artifacts before beginning
@@ -237,6 +269,8 @@ def call_libero(libero, script):
 if __name__ == '__main__':
     global libero
     global mss_configurator
+    global programming
+    global update
     # Check host system
     print("This is a " + platform.system() + " system.")
 
@@ -322,42 +356,59 @@ if __name__ == '__main__':
     print("Generating MSS configuration")
     make_mss_config(mss_configurator, "./sources/HDL/MSS/vcs_mss.cfg", os.path.join(os.getcwd(), "output/MSS"))
 
-    # SoftConsole headless is only available on Linux 
-    # Build the HSS and bare metal using it when on Linux
-    # The payload generator needs a different config file for windows and linux due to paths.
-    if platform.system() == "Linux" or platform.system() == "Linux2":
-        print("Building HSS")
-        make_hss(sources["HSS"])
+    if not update:
+        # SoftConsole headless is only available on Linux 
+        # Build the HSS and bare metal using it when on Linux
+        # The payload generator needs a different config file for windows and linux due to paths.
+        if platform.system() == "Linux" or platform.system() == "Linux2":
+            print("Building HSS")
+            make_hss(sources["HSS"])
 
-        print("Building bare metal")
-        make_bare_metal(softconsole_headless, sources["bare-metal-examples"])
+            print("Building bare metal")
+            make_bare_metal(softconsole_headless, sources["bare-metal-examples"])
 
-        print("Generating HSS payload")
-        make_hss_payload(os.path.join(sources["HSS-payload-generator"], "hss-payload-generator/binaries/"),
-                         os.path.join(os.getcwd(),
-                                      "recipes/hss-payload/config_lin.yaml"),
-                         os.path.join(os.getcwd(), "output/payload/spi.bin"))
+            print("Generating HSS payload")
+            make_hss_payload(os.path.join(sources["HSS-payload-generator"], "hss-payload-generator/binaries/"),
+                            os.path.join(os.getcwd(),
+                                        "recipes/hss-payload/config_lin.yaml"),
+                            os.path.join(os.getcwd(), "output/payload/spi.bin"))
 
-    # If we're on Windows use the pre-built HSS and bare metal executables.
-    # The HSS payload generator needs a windows specific config file for paths.
-    elif platform.system() == "win32" or platform.system() == "win64" or "_NT" in platform.system() or platform.system() == "Windows":
-        print("Using pre-built HSS")
-        shutil.copyfile(
-            os.path.join(os.getcwd(), "sources/pre-built-executables/vcs_demo_artifacts/hss-envm-wrapper-bm1-p0.hex"),
-            os.path.join(os.getcwd(), "output/HSS/hss-envm-wrapper-bm1-p0.hex"))
+        # If we're on Windows use the pre-built HSS and bare metal executables.
+        # The HSS payload generator needs a windows specific config file for paths.
+        elif platform.system() == "win32" or platform.system() == "win64" or "_NT" in platform.system() or platform.system() == "Windows":
+            print("Using pre-built HSS")
+            shutil.copyfile(
+                os.path.join(os.getcwd(), "sources/pre-built-executables/vcs_demo_artifacts/hss-envm-wrapper-bm1-p0.hex"),
+                os.path.join(os.getcwd(), "output/HSS/hss-envm-wrapper-bm1-p0.hex"))
 
-        print("Using pre-built bare metal")
-        shutil.copyfile(
-            os.path.join(os.getcwd(), "sources/pre-built-executables/vcs_demo_artifacts/mpfs-mmuart-interrupt.elf"),
-            os.path.join(os.getcwd(), "./output/bare-metal/mpfs-mmuart-interrupt.elf"))
+            print("Using pre-built bare metal")
+            shutil.copyfile(
+                os.path.join(os.getcwd(), "sources/pre-built-executables/vcs_demo_artifacts/mpfs-mmuart-interrupt.elf"),
+                os.path.join(os.getcwd(), "./output/bare-metal/mpfs-mmuart-interrupt.elf"))
 
-        print("Generating HSS payload")
-        make_hss_payload(os.path.join(sources["HSS-payload-generator"], "hss-payload-generator/binaries/"),
-                         os.path.join(os.getcwd(),
-                                      "recipes/hss-payload/config_win.yaml"),
-                         os.path.join(os.getcwd(), "output/payload/spi.bin"))
+            print("Generating HSS payload")
+            make_hss_payload(os.path.join(sources["HSS-payload-generator"], "hss-payload-generator/binaries/"),
+                            os.path.join(os.getcwd(),
+                                        "recipes/hss-payload/config_win.yaml"),
+                            os.path.join(os.getcwd(), "output/payload/spi.bin"))
 
     print("Generating Libero project")
     call_libero(libero, os.path.join(os.getcwd(), "recipes/libero-project/generate-project.tcl"))
+
+    if not update:
+        print("Running the Libero flow")
+        call_libero(libero, os.path.join(os.getcwd(), "recipes/libero-project/run-flow.tcl"))
+
+        print("Importing clients")
+        call_libero(libero, os.path.join(os.getcwd(), "recipes/libero-project/import-clients.tcl"))
+
+        print("Exporting output files to the output/final-files directory")
+        call_libero(libero, os.path.join(os.getcwd(), "recipes/libero-project/export-data.tcl"))
+    else:
+        print("The libero project has been generated and can now be opened by opening the project file in the output/libero_project directory")
+
+    if programming:
+        print("Programming target")
+        call_libero(libero, os.path.join(os.getcwd(), "recipes/libero-project/program-device.tcl"))
 
     print("Finished")

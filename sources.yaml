@@ -14,10 +14,12 @@ HDL:
     type: git
     link: https://bitbucket.microchip.com/scm/fpga_pfsoc_es/icicle-kit-minimal-bring-up-design-src.git
     branch: initial-work
+    commit: 9e966085bab
 bare-metal-examples:
     type: git
     link: https://github.com/polarfire-soc/polarfire-soc-bare-metal-examples.git
     branch: main
+    commit: acdddf3
 
 # Source format:
 # - [NAME]:

@@ -44,32 +44,41 @@ def parse_args_linux():
 
     # Initialize parser
     parser = argparse.ArgumentParser()
-    
+
     # Adding tool path arguments
-    parser.add_argument("-LIB_SOC_DIR", "--Libero_SoC_Install_Directory", help = "Install directory for Libero SoC v2021.3 to be used when running this script. For example: /usr/local/microsemi/Libero_SoC_v2021.2/")
-    parser.add_argument("-SC_DIR", "--SoftConsole_Install_Directory", help = "Install directory for SoftConsole v2021.3 to be used when running this script. For example: /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/")
-    parser.add_argument("-LM_LIC", "--LM_License_File", help = "LM License to be used when running Libero as part of this script. For example 1703@localhost")
+    parser.add_argument("-LIB_SOC_DIR", "--Libero_SoC_Install_Directory",
+                        help="Install directory for Libero SoC v2021.3 to be used when running this script. For example: /usr/local/microsemi/Libero_SoC_v2021.2/")
+    parser.add_argument("-SC_DIR", "--SoftConsole_Install_Directory",
+                        help="Install directory for SoftConsole v2021.3 to be used when running this script. For example: /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/")
+    parser.add_argument("-LM_LIC", "--LM_License_File",
+                        help="LM License to be used when running Libero as part of this script. For example 1703@localhost")
 
     # Adding flow arguments
-    parser.add_argument("-P", "--Program", help = 'Passing this argument and "True" will attempt programming of a connected target (Icicle Kit) once the bitstream has been built')
-    parser.add_argument("-U", "--Design_Update", help = 'Passing this argument and "True" will run the flow so that a desin is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
-    parser.add_argument("-C", "--Clean", help = 'Passing this argument and "True" will delete all sources and output files without cloning / building any sources or generating a bitstream.')
-    
+    parser.add_argument("-P", "--Program",
+                        help='Passing this argument and "True" will attempt programming of a connected target (Icicle Kit) once the bitstream has been built')
+    parser.add_argument("-U", "--Design_Update",
+                        help='Passing this argument and "True" will run the flow so that a desin is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
+    parser.add_argument("-C", "--Clean",
+                        help='Passing this argument and "True" will delete all sources and output files without cloning / building any sources or generating a bitstream.')
+
     # Read arguments from command line
     args = parser.parse_args()
 
     # Set up tool paths based on arguments - if not argument is passed and the tool isn't found in path / its own env variable a default path will be used to attempt to run the demo
     user_home = os.path.expanduser("~")
     if args.Libero_SoC_Install_Directory:
-        os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.join(str(args.Libero_SoC_Install_Directory) + "Libero/bin/")
-        os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.join(str(args.Libero_SoC_Install_Directory) + "Libero/bin64/")
+        os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.join(
+            str(args.Libero_SoC_Install_Directory) + "Libero/bin/")
+        os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.join(
+            str(args.Libero_SoC_Install_Directory) + "Libero/bin64/")
         if os.environ.get('FPGENPROG') is None:
-            os.environ["FPGENPROG"] =os.path.join(str(args.Libero_SoC_Install_Directory) + "Libero/bin64/fpgenprog")
+            os.environ["FPGENPROG"] = os.path.join(str(args.Libero_SoC_Install_Directory) + "Libero/bin64/fpgenprog")
     elif "Libero/bin/" not in os.environ["PATH"]:
-        print("Libero path not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
+        print(
+            "Libero path not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
         os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.3/Libero/bin/"
         os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.3/Libero/bin64/"
-    
+
     if os.environ.get('FPGENPROG') is None:
         print("FPGENPROG enviroment variable is not set - attempting to use default path for v2021.3")
         os.environ["FPGENPROG"] = "/usr/local/microsemi/Libero_SoC_v2021.3/Libero/bin64/fpgenprog"
@@ -77,22 +86,26 @@ def parse_args_linux():
     if args.SoftConsole_Install_Directory:
         if os.environ.get('SC_INSTALL_DIR') is None:
             os.environ["SC_INSTALL_DIR"] = str(args.SoftConsole_Install_Directory)
-        os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.join(str(args.SoftConsole_Install_Directory) + "eclipse/")
+        os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.join(
+            str(args.SoftConsole_Install_Directory) + "eclipse/")
         os.environ["PATH"] = os.environ[
-                                "PATH"] + ":" + os.path.join(str(args.SoftConsole_Install_Directory) + "python/bin")
+                                 "PATH"] + ":" + os.path.join(str(args.SoftConsole_Install_Directory) + "python/bin")
         os.environ["PATH"] = os.environ[
-                                "PATH"] + ":" + os.path.join(str(args.SoftConsole_Install_Directory) + "riscv-unknown-elf-gcc/bin")
+                                 "PATH"] + ":" + os.path.join(
+            str(args.SoftConsole_Install_Directory) + "riscv-unknown-elf-gcc/bin")
         os.environ["PATH"] = os.environ[
-                                "PATH"] + ":" + os.path.join(str(args.SoftConsole_Install_Directory) + "eclipse/jre/bin")
+                                 "PATH"] + ":" + os.path.join(
+            str(args.SoftConsole_Install_Directory) + "eclipse/jre/bin")
     elif "SoftConsole" not in os.environ["PATH"]:
-        print("SoftConsole path not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
+        print(
+            "SoftConsole path not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
         os.environ["PATH"] = os.environ["PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/"
         os.environ["PATH"] = os.environ[
-                                "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/python/bin"
+                                 "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/python/bin"
         os.environ["PATH"] = os.environ[
-                                "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/riscv-unknown-elf-gcc/bin"
+                                 "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/riscv-unknown-elf-gcc/bin"
         os.environ["PATH"] = os.environ[
-                                "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/jre/bin"
+                                 "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/jre/bin"
 
     if os.environ.get('SC_INSTALL_DIR') is None:
         print("SC_INSTALL_DIR enviroment variable is not set - attempting to use default path for v2021.3")
@@ -100,9 +113,9 @@ def parse_args_linux():
 
     if args.LM_License_File:
         os.environ[
-        "LM_LICENSE_FILE"] = str(args.LM_License_File)
+            "LM_LICENSE_FILE"] = str(args.LM_License_File)
 
-    # Tool call variables - these are the names of the tools to run which will be called from os.system. 
+    # Tool call variables - these are the names of the tools to run which will be called from os.system.
     # Full paths could be used here instead of assuming tools are in PATH
     libero = "libero"
     mss_configurator = "pfsoc_mss"
@@ -128,8 +141,8 @@ def parse_args_linux():
 # Checks to see if all of the required tools are installed and present in path, if a needed tool isn't available the script will exit
 def check_tool_status_linux():
     if shutil.which("libero") is None:
-            print("Error: libero not found in path")
-            exit()
+        print("Error: libero not found in path")
+        exit()
 
     if shutil.which("pfsoc_mss") is None:
         print("Error: polarfire soc mss configurator not found in path")
@@ -179,19 +192,24 @@ def parse_args_windows():
     global mss_configurator
     global programming
     global update
-    global clean 
+    global clean
 
     # Initialize parser
     parser = argparse.ArgumentParser()
-    
+
     # Adding tool path arguments
-    parser.add_argument("-libero", "--Libero_SoC_Executable", help = "Location of the Libero SoC v2021.3 executable to be used when running this script. For example: C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe")
-    parser.add_argument("-pfsoc_mss", "--PolarFire_SoC_MSS_Configurator_Executable", help = "Location of the PolarFire SoC MSS Configurator executable to be used when running this script. For example: C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe")
-    
+    parser.add_argument("-libero", "--Libero_SoC_Executable",
+                        help="Location of the Libero SoC v2021.3 executable to be used when running this script. For example: C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe")
+    parser.add_argument("-pfsoc_mss", "--PolarFire_SoC_MSS_Configurator_Executable",
+                        help="Location of the PolarFire SoC MSS Configurator executable to be used when running this script. For example: C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe")
+
     # Adding flow arguments
-    parser.add_argument("-P", "--Program", help = 'Passing this argument and "True" will attempt programming of a connected target (Icicle Kit) once the bitstream has been built')
-    parser.add_argument("-U", "--Design_Update", help = 'Passing this argument will run the flow so that a desin is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
-    parser.add_argument("-C", "--Clean", help = 'Passing this argument and "True" will delete all sources and output files without cloning / building any sources or generating a bitstream.')
+    parser.add_argument("-P", "--Program",
+                        help='Passing this argument and "True" will attempt programming of a connected target (Icicle Kit) once the bitstream has been built')
+    parser.add_argument("-U", "--Design_Update",
+                        help='Passing this argument will run the flow so that a desin is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
+    parser.add_argument("-C", "--Clean",
+                        help='Passing this argument and "True" will delete all sources and output files without cloning / building any sources or generating a bitstream.')
 
     # Read arguments from command line
     args = parser.parse_args()
@@ -200,15 +218,17 @@ def parse_args_windows():
     if args.Libero_SoC_Executable:
         libero = args.Libero_SoC_Executable
     elif "Libero_SoC_v2021.3\\Designer\\bin\\libero.exe" not in os.environ["PATH"]:
-        print("Libero executable not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
+        print(
+            "Libero executable not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
         libero = "C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe"
 
     if args.PolarFire_SoC_MSS_Configurator_Executable:
         mss_configurator = args.PolarFire_SoC_MSS_Configurator_Executable
     elif "Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe" not in os.environ["PATH"]:
-        print("PolarFire SoC MSS Configurator executable not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
+        print(
+            "PolarFire SoC MSS Configurator executable not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
         mss_configurator = "C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe"
-    
+
     # Set up the run based on flow arguments - used to indicate a design update or if programming is required
     if "true" in str(args.Program).lower():
         programming = True
@@ -354,7 +374,7 @@ def make_hss_payload(payload_generator, config, destination):
     top_dir = os.getcwd()
     os.chdir(payload_generator)
 
-# Switch here for Windows or Linux for the tool call
+    # Switch here for Windows or Linux for the tool call
     if platform.system() == "Linux" or platform.system() == "Linux2":
         # make sure the tool is executable (we download and extract it as a zip source)
         os.system("chmod +x ./hss-payload-generator")
@@ -392,16 +412,16 @@ if __name__ == '__main__':
         parse_args_linux()
 
         # This function will check if all of the required tools are present and quit if they aren't
-        check_tool_status_linux()                
+        check_tool_status_linux()
 
-    # Set up paths for Windows using full paths as tool names.
+        # Set up paths for Windows using full paths as tool names.
     # Default installation directories used below
     elif platform.system() == "Windows":
         parse_args_windows()
 
         # This function will check if all of the required tools are present and quit if they aren't
         check_tool_status_windows()
-    
+
     else:
         print("This does not appear to be a supported platform.")
 
@@ -426,7 +446,7 @@ if __name__ == '__main__':
     make_mss_config(mss_configurator, "./sources/HDL/MSS/vcs_mss.cfg", os.path.join(os.getcwd(), "output/MSS"))
 
     if not update:
-        # SoftConsole headless is only available on Linux 
+        # SoftConsole headless is only available on Linux
         # Build the HSS and bare metal using SC headless when on Linux
         # The payload generator needs a different config file for windows and linux due to paths.
         if platform.system() == "Linux" or platform.system() == "Linux2":
@@ -438,16 +458,17 @@ if __name__ == '__main__':
 
             print("Generating HSS payload")
             make_hss_payload(os.path.join(sources["HSS-payload-generator"], "hss-payload-generator/binaries/"),
-                            os.path.join(os.getcwd(),
-                                        "recipes/hss-payload/config_lin.yaml"),
-                            os.path.join(os.getcwd(), "output/payload/spi.bin"))
+                             os.path.join(os.getcwd(),
+                                          "recipes/hss-payload/config_lin.yaml"),
+                             os.path.join(os.getcwd(), "output/payload/spi.bin"))
 
         # If we're on Windows use the pre-built HSS and bare metal executables.
         # The HSS payload generator needs a windows specific config file for paths.
         else:
             print("Using pre-built HSS")
             shutil.copyfile(
-                os.path.join(os.getcwd(), "sources/pre-built-executables/vcs_demo_artifacts/hss-envm-wrapper-bm1-p0.hex"),
+                os.path.join(os.getcwd(),
+                             "sources/pre-built-executables/vcs_demo_artifacts/hss-envm-wrapper-bm1-p0.hex"),
                 os.path.join(os.getcwd(), "output/HSS/hss-envm-wrapper-bm1-p0.hex"))
 
             print("Using pre-built bare metal")
@@ -457,9 +478,9 @@ if __name__ == '__main__':
 
             print("Generating HSS payload")
             make_hss_payload(os.path.join(sources["HSS-payload-generator"], "hss-payload-generator/binaries/"),
-                            os.path.join(os.getcwd(),
-                                        "recipes/hss-payload/config_win.yaml"),
-                            os.path.join(os.getcwd(), "output/payload/spi.bin"))
+                             os.path.join(os.getcwd(),
+                                          "recipes/hss-payload/config_win.yaml"),
+                             os.path.join(os.getcwd(), "output/payload/spi.bin"))
 
     print("Generating Libero project")
     call_libero(libero, os.path.join(os.getcwd(), "recipes/libero-project/generate-project.tcl"))
@@ -477,8 +498,9 @@ if __name__ == '__main__':
         if programming:
             print("Programming target")
             call_libero(libero, os.path.join(os.getcwd(), "recipes/libero-project/program-device.tcl"))
-            
+
     else:
-        print("The libero project has been generated and can now be opened by opening the project file in the output/libero_project directory")
+        print(
+            "The libero project has been generated and can now be opened by opening the project file in the output/libero_project directory")
 
     print("Finished")

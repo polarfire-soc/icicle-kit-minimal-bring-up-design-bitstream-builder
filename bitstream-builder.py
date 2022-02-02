@@ -10,13 +10,14 @@ import requests
 import yaml
 
 
-# Parse command line arguments
+# Parse command line arguments and set tool locations
 def parse_args_linux():
     global libero
     global mss_configurator
     global softconsole_headless
     global programming
     global update
+
     # Initialize parser
     parser = argparse.ArgumentParser()
     
@@ -32,6 +33,7 @@ def parse_args_linux():
     # Read arguments from command line
     args = parser.parse_args()
 
+    # Set up tool paths based on arguments - if not argument is passed and the tool isn't found in path / its own env variable a default path will be used to attempt to run the demo
     user_home = os.path.expanduser("~")
     if args.Libero_SoC_Install_Directory:
         os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.join(str(args.Libero_SoC_Install_Directory) + "Libero/bin/")
@@ -81,7 +83,7 @@ def parse_args_linux():
     mss_configurator = "pfsoc_mss"
     softconsole_headless = "softconsole-headless"
 
-    # Flow conifguration
+    # Set up the run based on flow arguments - used to indicate a design update or if programming is required
     if "true" in str(args.Program).lower():
         programming = True
     else:
@@ -93,6 +95,7 @@ def parse_args_linux():
         update = False
 
 
+# Checks to see if all of the required tools are installed and present in path, if a needed tool isn't available the script will exit
 def check_tool_status_linux():
     if shutil.which("libero") is None:
             print("Error: libero not found in path")
@@ -140,6 +143,7 @@ def check_tool_status_linux():
         exit()
 
 
+# Parse command line arguments and set tool locations
 def parse_args_windows():
     global libero
     global mss_configurator
@@ -159,6 +163,7 @@ def parse_args_windows():
     # Read arguments from command line
     args = parser.parse_args()
 
+    # Set up tool paths based on arguments - if not argument is passed and the tool isn't found in path / its own env variable a default path will be used to attempt to run the demo
     if args.Libero_SoC_Executable:
         libero = args.Libero_SoC_Executable
     elif "Libero_SoC_v2021.3\\Designer\\bin\\libero.exe" not in os.environ["PATH"]:
@@ -171,6 +176,7 @@ def parse_args_windows():
         print("PolarFire SoC MSS Configurator executable not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
         mss_configurator = "C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe"
     
+    # Set up the run based on flow arguments - used to indicate a design update or if programming is required
     if "true" in str(args.Program).lower():
         programming = True
     else:
@@ -182,6 +188,7 @@ def parse_args_windows():
         update = False
 
 
+# Checks to see if all of the required tools are installed, if a needed tool isn't available the script will exit
 def check_tool_status_windows():
     if not os.path.isfile(libero):
         print("Error: libero not found")
@@ -364,7 +371,7 @@ if __name__ == '__main__':
 
     sources = {}
 
-    # Generating the design
+    # Bitstream building starts here - see individual functions for a description of their purpose
     print("Initializing workspace")
     init_workspace()
 
@@ -376,7 +383,7 @@ if __name__ == '__main__':
 
     if not update:
         # SoftConsole headless is only available on Linux 
-        # Build the HSS and bare metal using it when on Linux
+        # Build the HSS and bare metal using SC headless when on Linux
         # The payload generator needs a different config file for windows and linux due to paths.
         if platform.system() == "Linux" or platform.system() == "Linux2":
             print("Building HSS")

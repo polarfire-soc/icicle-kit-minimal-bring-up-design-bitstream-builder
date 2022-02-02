@@ -276,10 +276,6 @@ def make_hss(hss_source):
     shutil.copyfile("./output/MSS/test_mss_mss_cfg.xml",
                     os.path.join(hss_source, "boards/mpfs-icicle-kit-es/soc_fpga_design/xml/ICICLE_MSS_mss_cfg.xml"))
 
-    # remove buggy file in project and replace
-    os.remove(os.path.join(hss_source, "include/hss_debug.h"))
-    shutil.copyfile("recipes/HSS/hss_debug.h", os.path.join(hss_source, "./include/hss_debug.h"))
-
     # Add custom build configuration
     shutil.copyfile("recipes/HSS/spi-boot-hss.config", os.path.join(hss_source, "./.config"))
 

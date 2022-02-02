@@ -6,7 +6,7 @@ HSS:
     type: git
     link: https://bitbucket.microchip.com/scm/fpga_pfsoc_es/hart-software-services.git
     branch: develop
-    commit: dce6f1ae751
+    commit: 30bde64fe43
 HSS-payload-generator:
     type: zip
     link: https://github.com/polarfire-soc/hart-software-services/releases/latest/download/hss-payload-generator.zip

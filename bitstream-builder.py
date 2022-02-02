@@ -12,19 +12,22 @@ import yaml
 
 # Parse command line arguments
 def parse_args_linux():
+    global libero
+    global mss_configurator
+    global softconsole_headless
     global programming
     global update
     # Initialize parser
     parser = argparse.ArgumentParser()
     
     # Adding tool path arguments
-    parser.add_argument("-LIB_SOC_DIR", "--Libero_SoC_Install_Directory", help = "Install directory for Libero SoC v2021.3 to be used when running this script")
-    parser.add_argument("-SC_DIR", "--SoftConsole_Install_Directory", help = "Install directory for SoftConsole v2021.3 to be used when running this script")
-    parser.add_argument("-LM_LIC", "--LM_License_File", help = "LM License to be used when running Libero as part of this script")
+    parser.add_argument("-LIB_SOC_DIR", "--Libero_SoC_Install_Directory", help = "Install directory for Libero SoC v2021.3 to be used when running this script. For example: /usr/local/microsemi/Libero_SoC_v2021.2/")
+    parser.add_argument("-SC_DIR", "--SoftConsole_Install_Directory", help = "Install directory for SoftConsole v2021.3 to be used when running this script. For example: /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/")
+    parser.add_argument("-LM_LIC", "--LM_License_File", help = "LM License to be used when running Libero as part of this script. For example 1703@localhost")
 
     # Adding flow arguments
     parser.add_argument("-PROG", "--Program", help = 'Passing this argument and "True" will attempt programming of a connected target (Icicle Kit) once the bitstream has been built')
-    parser.add_argument("-UPDATE", "--Design_Update", help = 'Passing this argument will run the flow so that a desin is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
+    parser.add_argument("-UPDATE", "--Design_Update", help = 'Passing this argument and "True" will run the flow so that a desin is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
     
     # Read arguments from command line
     args = parser.parse_args()
@@ -72,6 +75,13 @@ def parse_args_linux():
         os.environ[
         "LM_LICENSE_FILE"] = str(args.LM_License_File)
 
+    # Tool call variables - these are the names of the tools to run which will be called from os.system. 
+    # Full paths could be used here instead of assuming tools are in PATH
+    libero = "libero"
+    mss_configurator = "pfsoc_mss"
+    softconsole_headless = "softconsole-headless"
+
+    # Flow conifguration
     if "true" in str(args.Program).lower():
         programming = True
     else:
@@ -83,6 +93,53 @@ def parse_args_linux():
         update = False
 
 
+def check_tool_status_linux():
+    if shutil.which("libero") is None:
+            print("Error: libero not found in path")
+            exit()
+
+    if shutil.which("pfsoc_mss") is None:
+        print("Error: polarfire soc mss configurator not found in path")
+        exit()
+
+    if shutil.which("softconsole-headless") is None:
+        print("Error: softconsole headless not found in path")
+        exit()
+
+    if os.environ.get('LM_LICENSE_FILE') is None:
+        print("Error: no libero license found")
+        exit()
+
+    if os.environ.get('SC_INSTALL_DIR') is None:
+        print(
+            "Error: SC_INSTALL_DIR enviroment variable not set, please set this variable and point it to the "
+            "appropriate SoftConsole insatllation directory to run this script")
+        exit()
+
+    if os.environ.get('FPGENPROG') is None:
+        print(
+            "Error: FPGENPROG enviroment variable not set, please set this variable and point it to the appropriate "
+            "FPGENPROG executable to run this script")
+        exit()
+
+    path = os.environ["PATH"]
+
+    if "/python/bin" not in path:
+        print(
+            "The path to the SoftConsole python installation needs to be set in PATH to run this script")
+        exit()
+
+    if "/riscv-unknown-elf-gcc/bin" not in path:
+        print(
+            "The path to the RISC-V toolchain needs to be set in PATH to run this script")
+        exit()
+
+    if "/eclipse/jre/bin" not in path:
+        print(
+            "The path to the SoftConsole Java installation needs to be set in PATH to run this script")
+        exit()
+
+
 def parse_args_windows():
     global libero
     global mss_configurator
@@ -92,8 +149,8 @@ def parse_args_windows():
     parser = argparse.ArgumentParser()
     
     # Adding tool path arguments
-    parser.add_argument("-libero", "--Libero_SoC_Executable", help = "Location of the Libero SoC v2021.3 executable to be used when running this script")
-    parser.add_argument("-pfsoc_mss", "--PolarFire_SoC_MSS_Configurator_Executable", help = "Location of the PolarFire SoC MSS Configurator executable to be used when running this script")
+    parser.add_argument("-libero", "--Libero_SoC_Executable", help = "Location of the Libero SoC v2021.3 executable to be used when running this script. For example: C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe")
+    parser.add_argument("-pfsoc_mss", "--PolarFire_SoC_MSS_Configurator_Executable", help = "Location of the PolarFire SoC MSS Configurator executable to be used when running this script. For example: C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe")
     
     # Adding flow arguments
     parser.add_argument("-PROG", "--Program", help = 'Passing this argument and "True" will attempt programming of a connected target (Icicle Kit) once the bitstream has been built')
@@ -123,6 +180,16 @@ def parse_args_windows():
         update = True
     else:
         update = False
+
+
+def check_tool_status_windows():
+    if not os.path.isfile(libero):
+        print("Error: libero not found")
+        exit()
+
+    if not os.path.isfile(mss_configurator):
+        print("Error: polarfire soc mss configurator not found")
+        exit()
 
 
 # Creates required folders and removes artifacts before beginning
@@ -269,6 +336,7 @@ def call_libero(libero, script):
 if __name__ == '__main__':
     global libero
     global mss_configurator
+    global softconsole_headless
     global programming
     global update
     # Check host system
@@ -280,69 +348,16 @@ if __name__ == '__main__':
         # It is recommended to set these environment variables outside the script environment on the host PC
         parse_args_linux()
 
-        if shutil.which("libero") is None:
-            print("Error: libero not found in path")
-            exit()
-
-        if shutil.which("pfsoc_mss") is None:
-            print("Error: polarfire soc mss configurator not found in path")
-            exit()
-
-        if shutil.which("softconsole-headless") is None:
-            print("Error: softconsole headless not found in path")
-            exit()
-
-        if os.environ.get('LM_LICENSE_FILE') is None:
-            print("Error: no libero license found")
-            exit()
-
-        if os.environ.get('SC_INSTALL_DIR') is None:
-            print(
-                "Error: SC_INSTALL_DIR enviroment variable not set, please set this variable and point it to the "
-                "appropriate SoftConsole insatllation directory to run this script")
-            exit()
-
-        if os.environ.get('FPGENPROG') is None:
-            print(
-                "Error: FPGENPROG enviroment variable not set, please set this variable and point it to the appropriate "
-                "FPGENPROG executable to run this script")
-            exit()
-
-        path = os.environ["PATH"]
-
-        if "/python/bin" not in path:
-            print(
-                "The path to the SoftConsole python installation needs to be set in PATH to run this script")
-            exit()
-
-        if "/riscv-unknown-elf-gcc/bin" not in path:
-            print(
-                "The path to the RISC-V toolchain needs to be set in PATH to run this script")
-            exit()
-
-        if "/eclipse/jre/bin" not in path:
-            print(
-                "The path to the SoftConsole Java installation needs to be set in PATH to run this script")
-            exit()
-
-        # Tool call variables - these are the names of the tools to run which will be called from os.system. 
-        # Full paths could be used here instead of assuming tools are in PATH
-        mss_configurator = "pfsoc_mss"
-        libero = "libero"
-        softconsole_headless = "softconsole-headless"
+        # This function will check if all of the required tools are present and quit if they aren't
+        check_tool_status_linux()                
 
     # Set up paths for Windows using full paths as tool names.
     # Default installation directories used below
     elif platform.system() == "Windows":
         parse_args_windows()
 
-        if not os.path.isfile(libero):
-            print("Error: libero not found")
-            exit()
-
-        if not os.path.isfile(mss_configurator):
-            print("Error: polarfire soc mss configurator not found")
-            exit()
+        # This function will check if all of the required tools are present and quit if they aren't
+        check_tool_status_windows()
     
     else:
         print("This does not appear to be a supported platform.")

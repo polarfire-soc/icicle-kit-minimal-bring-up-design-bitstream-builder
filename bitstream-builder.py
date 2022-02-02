@@ -17,6 +17,7 @@ def parse_args_linux():
     global softconsole_headless
     global programming
     global update
+    global clean
 
     # Initialize parser
     parser = argparse.ArgumentParser()
@@ -27,8 +28,9 @@ def parse_args_linux():
     parser.add_argument("-LM_LIC", "--LM_License_File", help = "LM License to be used when running Libero as part of this script. For example 1703@localhost")
 
     # Adding flow arguments
-    parser.add_argument("-PROG", "--Program", help = 'Passing this argument and "True" will attempt programming of a connected target (Icicle Kit) once the bitstream has been built')
-    parser.add_argument("-UPDATE", "--Design_Update", help = 'Passing this argument and "True" will run the flow so that a desin is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
+    parser.add_argument("-P", "--Program", help = 'Passing this argument and "True" will attempt programming of a connected target (Icicle Kit) once the bitstream has been built')
+    parser.add_argument("-U", "--Design_Update", help = 'Passing this argument and "True" will run the flow so that a desin is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
+    parser.add_argument("-C", "--Clean", help = 'Passing this argument and "True" will delete all sources and output files without cloning / building any sources or generating a bitstream.')
     
     # Read arguments from command line
     args = parser.parse_args()
@@ -94,6 +96,11 @@ def parse_args_linux():
     else:
         update = False
 
+    if "true" in str(args.Clean).lower():
+        clean = True
+    else:
+        clean = False
+
 
 # Checks to see if all of the required tools are installed and present in path, if a needed tool isn't available the script will exit
 def check_tool_status_linux():
@@ -149,6 +156,8 @@ def parse_args_windows():
     global mss_configurator
     global programming
     global update
+    global clean 
+
     # Initialize parser
     parser = argparse.ArgumentParser()
     
@@ -157,8 +166,9 @@ def parse_args_windows():
     parser.add_argument("-pfsoc_mss", "--PolarFire_SoC_MSS_Configurator_Executable", help = "Location of the PolarFire SoC MSS Configurator executable to be used when running this script. For example: C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe")
     
     # Adding flow arguments
-    parser.add_argument("-PROG", "--Program", help = 'Passing this argument and "True" will attempt programming of a connected target (Icicle Kit) once the bitstream has been built')
-    parser.add_argument("-UPDATE", "--Design_Update", help = 'Passing this argument will run the flow so that a desin is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
+    parser.add_argument("-P", "--Program", help = 'Passing this argument and "True" will attempt programming of a connected target (Icicle Kit) once the bitstream has been built')
+    parser.add_argument("-U", "--Design_Update", help = 'Passing this argument will run the flow so that a desin is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
+    parser.add_argument("-C", "--Clean", help = 'Passing this argument and "True" will delete all sources and output files without cloning / building any sources or generating a bitstream.')
 
     # Read arguments from command line
     args = parser.parse_args()
@@ -186,6 +196,11 @@ def parse_args_windows():
         update = True
     else:
         update = False
+
+    if "true" in str(args.Clean).lower():
+        clean = True
+    else:
+        clean = False
 
 
 # Checks to see if all of the required tools are installed, if a needed tool isn't available the script will exit
@@ -342,6 +357,8 @@ if __name__ == '__main__':
     global softconsole_headless
     global programming
     global update
+    global clean
+
     # Check host system
     print("This is a " + platform.system() + " system.")
 
@@ -364,6 +381,14 @@ if __name__ == '__main__':
     
     else:
         print("This does not appear to be a supported platform.")
+
+    if clean:
+        if os.path.exists("./output"):
+            shutil.rmtree('./output')
+        if os.path.exists("./sources"):
+            shutil.rmtree('./sources')
+
+        exit()
 
     sources = {}
 

@@ -43,7 +43,7 @@ The following additional Python packages are also required
 
 They can be installed with the following command:
 
-`python3 -m pip install gitpython requests pyyaml`
+    python3 -m pip install gitpython requests pyyaml
 
 Note: gitpython requires git to be installed on the host system. Git can be downloaded [here](https://git-scm.com/downloads).
 
@@ -101,31 +101,31 @@ The following arguments are available:
 
 An example call is shown below to run the script and generate a bitstream:
 
-`python3 bitstream-builder.py -LM_LIC 1702@localhost -LIB_SOC_DIR /usr/local/microsemi/Libero_SoC_v2021.3/ -SC_DIR /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/`
+    python3 bitstream-builder.py -LM_LIC 1702@localhost -LIB_SOC_DIR /usr/local/microsemi/Libero_SoC_v2021.3/ -SC_DIR /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/
 
 If all of the required tools are set up and available in the system path the following call could be used:
 
-`python3 bitstream-builder.py`
+    python3 bitstream-builder.py
 
 ##### Standard run with programming on Linux
 
 An example call is shown below to run the script, generate a bitstream and program a connected target:
 
-`python3 bitstream-builder.py -LM_LIC 1702@localhost -LIB_SOC_DIR /usr/local/microsemi/Libero_SoC_v2021.3/ -SC_DIR /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/ -P True`
+    python3 bitstream-builder.py -LM_LIC 1702@localhost -LIB_SOC_DIR /usr/local/microsemi/Libero_SoC_v2021.3/ -SC_DIR /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/ -P True
 
 If all of the required tools are set up and available in the system path the following call could be used:
 
-`python3 bitstream-builder.py -P true`
+    python3 bitstream-builder.py -P true
 
 ##### Design update run on Linux
 
 An example call is shown below to run the script in design update mode where no clients or bitstream are generated, just a Libero design:
 
-`python3 bitstream-builder.py -LM_LIC 1702@localhost -LIB_SOC_DIR /usr/local/microsemi/Libero_SoC_v2021.3/ -SC_DIR /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/ -U True`
+    python3 bitstream-builder.py -LM_LIC 1702@localhost -LIB_SOC_DIR /usr/local/microsemi/Libero_SoC_v2021.3/ -SC_DIR /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/ -U True
 
 If all of the required tools are set up and available in the system path the following call could be used:
 
-`python3 bitstream-builder.py -U true`
+    python3 bitstream-builder.py -U true
 
 ### Running the bitstream builder script on Windows
 
@@ -151,31 +151,31 @@ The following arguments are available:
 
 An example call is shown below to run the script and generate a bitstream:
 
-`python3 bitstream-builder.py -pfsoc_mss C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe -libero C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe`
+    python3 bitstream-builder.py -pfsoc_mss C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe -libero C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe
 
 If all of the required tools are set up and available in the system path the following call could be used:
 
-`python3 bitstream-builder.py`
+    python3 bitstream-builder.py
 
 ##### Standard run with programming on Windows
 
 An example call is shown below to run the script, generate a bitstream and program a connected target:
 
-`python3 bitstream-builder.py -pfsoc_mss C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe -libero C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe -P True`
+    python3 bitstream-builder.py -pfsoc_mss C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe -libero C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe -P True
 
 If all of the required tools are set up and available in the system path the following call could be used:
 
-`python3 bitstream-builder.py -P true`
+    python3 bitstream-builder.py -P true
 
 ##### Design update run on Windows
 
 An example call is shown below to run the script in design update mode where no clients or bitstream are generated, just a Libero design:
 
-`python3 bitstream-builder.py -pfsoc_mss C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe -libero C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe -U True`
+    python3 bitstream-builder.py -pfsoc_mss C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe -libero C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe -U True
 
 If all of the required tools are set up and available in the system path the following call could be used:
 
-`python3 bitstream-builder.py -U true`
+    python3 bitstream-builder.py -U true
 
 ## Linux tool flow
 

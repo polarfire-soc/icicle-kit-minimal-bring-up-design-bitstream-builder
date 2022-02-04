@@ -67,6 +67,8 @@ Note: Libero SoC also requires a license to run - this demo is supported by the 
 
 Note: the PolarFire SoC MSS configurator is also installed with Libero SoC.
 
+Note: SoftConsole is not used in the Windows demo as it is not available headlessly (although this could be achieved using tools like WSL) - see the "Windows tool flow" section for more information.
+
 ## Running the bitstream builder script
 
 The bitstream builder supports both Windows and Linux hosts, there are more tool features available on Linux hosts so additional steps can be carried out on Linux hosts. Due to different flows there are different tools and paths needed for Windows vs Linux and there are different script arguments available.

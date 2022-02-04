@@ -83,11 +83,11 @@ If no arguments are passed and the tools aren't found in the system path the scr
 
 The following arguments are available:
 
-* -LIB_SOC_DIR or --libero_soc_install_directory: This is the path to the installation of Libero on your system, typically /usr/local/microsemi/Libero_SoC_v2021.3/
+* -l or --libero_soc_install_directory: This is the path to the installation of Libero on your system, typically /usr/local/microsemi/Libero_SoC_v2021.3/
 
-* -SC_DIR or --softconsole_install_directory: This is the path to the installation of SoftConsole on your system, typically /home/[USERNAME]/Microchip/SoftConsole-v2021.3-7.0.0.599/
+* -s or --softconsole_install_directory: This is the path to the installation of SoftConsole on your system, typically /home/[USERNAME]/Microchip/SoftConsole-v2021.3-7.0.0.599/
 
-* -LM_LIC or --lm_license_file: This is where Libero should look for a license on your system
+* -L or --lm_license_file: This is where Libero should look for a license on your system
 
 * -P or --program: passing this argument and "True" will add an additional stage at the end of script execution where a connected device will be programmed. This assumes that only one device is connected.
 
@@ -101,7 +101,7 @@ The following arguments are available:
 
 An example call is shown below to run the script and generate a bitstream:
 
-    python3 bitstream-builder.py -LM_LIC 1702@localhost -LIB_SOC_DIR /usr/local/microsemi/Libero_SoC_v2021.3/ -SC_DIR /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/
+    python3 bitstream-builder.py -L 1702@localhost -l /usr/local/microsemi/Libero_SoC_v2021.3/ -s /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/
 
 If all of the required tools are set up and available in the system path the following call could be used:
 
@@ -111,7 +111,7 @@ If all of the required tools are set up and available in the system path the fol
 
 An example call is shown below to run the script, generate a bitstream and program a connected target:
 
-    python3 bitstream-builder.py -LM_LIC 1702@localhost -LIB_SOC_DIR /usr/local/microsemi/Libero_SoC_v2021.3/ -SC_DIR /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/ -P True
+    python3 bitstream-builder.py -L 1702@localhost -l /usr/local/microsemi/Libero_SoC_v2021.3/ -s /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/ -P True
 
 If all of the required tools are set up and available in the system path the following call could be used:
 
@@ -121,7 +121,7 @@ If all of the required tools are set up and available in the system path the fol
 
 An example call is shown below to run the script in design update mode where no clients or bitstream are generated, just a Libero design:
 
-    python3 bitstream-builder.py -LM_LIC 1702@localhost -LIB_SOC_DIR /usr/local/microsemi/Libero_SoC_v2021.3/ -SC_DIR /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/ -U True
+    python3 bitstream-builder.py -L 1702@localhost -l /usr/local/microsemi/Libero_SoC_v2021.3/ -s /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/ -U True
 
 If all of the required tools are set up and available in the system path the following call could be used:
 
@@ -135,9 +135,9 @@ Arguments can be used to overwrite tool paths used and also configure the flow t
 
 The following arguments are available:
 
-* -libero or --libero_soc_executable: This is the path to the installation of Libero on your system, typically C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe
+* -l or --libero_soc_executable: This is the path to the installation of Libero on your system, typically C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe
 
-* -pfsoc_mss or --polarfire_soc_mss_configurator_executable: This is the path to the installation of the PolarFire SoC MSS configurator on your system, typically C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe
+* -p or --polarfire_soc_mss_configurator_executable: This is the path to the installation of the PolarFire SoC MSS configurator on your system, typically C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe
 
 * -P or --program: passing this argument and "True" will add an additional stage at the end of script execution where a connected device will be programmed. This assumes that only one device is connected.
 
@@ -151,7 +151,7 @@ The following arguments are available:
 
 An example call is shown below to run the script and generate a bitstream:
 
-    python3 bitstream-builder.py -pfsoc_mss C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe -libero C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe
+    python3 bitstream-builder.py -p C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe -l C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe
 
 If all of the required tools are set up and available in the system path the following call could be used:
 
@@ -161,7 +161,7 @@ If all of the required tools are set up and available in the system path the fol
 
 An example call is shown below to run the script, generate a bitstream and program a connected target:
 
-    python3 bitstream-builder.py -pfsoc_mss C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe -libero C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe -P True
+    python3 bitstream-builder.py -p C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe -l C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe -P True
 
 If all of the required tools are set up and available in the system path the following call could be used:
 
@@ -171,7 +171,7 @@ If all of the required tools are set up and available in the system path the fol
 
 An example call is shown below to run the script in design update mode where no clients or bitstream are generated, just a Libero design:
 
-    python3 bitstream-builder.py -pfsoc_mss C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe -libero C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe -U True
+    python3 bitstream-builder.py -p C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe -l C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe -U True
 
 If all of the required tools are set up and available in the system path the following call could be used:
 

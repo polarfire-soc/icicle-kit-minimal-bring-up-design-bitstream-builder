@@ -23,23 +23,23 @@ The aim of this example is to demonstrate how a user can fetch multiple version 
 This demo consists of several components:
 
 1. bitstream-builder.py:
-   - This is the main script used to control the generation of clients and the Libero project. It sets up the workspace and calls all tools required
+   * This is the main script used to control the generation of clients and the Libero project. It sets up the workspace and calls all tools required
 2. sources.yaml:
-   - This YAML file is used to list off all of the sources used in the bitstream, if they are actual source files in a VCS (e.g a git repository) or if they are artifacts stored on a URL (e.g a GitHub asset). In this example Git sources can be pulled based on a branch in a repository and also a specific commit on a branch if required.
+   * This YAML file is used to list off all of the sources used in the bitstream, if they are actual source files in a VCS (e.g a git repository) or if they are artifacts stored on a URL (e.g a GitHub asset). In this example Git sources can be pulled based on a branch in a repository and also a specific commit on a branch if required.
 3. Recipes:
-   - Contains any additional files required to run a stage of the project creation, for example Tcl scripts to drive Libero and call design creation scripts and config files for HSS payloads.
+   * Contains any additional files required to run a stage of the project creation, for example Tcl scripts to drive Libero and call design creation scripts and config files for HSS payloads.
 
 ## Required tools
 
 This demo uses a Python script as the main driver for tools and source management.
 
-- [Python 3](https://www.python.org/downloads/) is required on the host system
+* [Python 3](https://www.python.org/downloads/) is required on the host system
 
 The following additional Python packages are also required
 
-- gitpython
-- requests
-- pyyaml
+* gitpython
+* requests
+* pyyaml
 
 They can be installed with the following command:
 
@@ -51,8 +51,8 @@ Note: gitpython requires git to be installed on the host system. Git can be down
 
 On Linux the following tools are needed:
 
-- [Libero SoC v2021.3](https://www.microchip.com/en-us/products/fpgas-and-plds/fpga-and-soc-design-tools/fpga/libero-software-later-versions#Documents%20and%20Downloads)
-- [SoftConsole v2021.3](https://www.microchip.com/en-us/products/fpgas-and-plds/fpga-and-soc-design-tools/programming-and-debug/softconsole)
+* [Libero SoC v2021.3](https://www.microchip.com/en-us/products/fpgas-and-plds/fpga-and-soc-design-tools/fpga/libero-software-later-versions#Documents%20and%20Downloads)
+* [SoftConsole v2021.3](https://www.microchip.com/en-us/products/fpgas-and-plds/fpga-and-soc-design-tools/programming-and-debug/softconsole)
 
 Note: Libero SoC also requires a license to run - this demo is supported by the free silver license.
 
@@ -60,8 +60,8 @@ Note: Libero SoC also requires a license to run - this demo is supported by the 
 
 On Windows the following tools are needed:
 
-- [Libero SoC v2021.3](https://www.microchip.com/en-us/products/fpgas-and-plds/fpga-and-soc-design-tools/fpga/libero-software-later-versions#Documents%20and%20Downloads)
-- The PolarFire SoC MSS configurator
+* [Libero SoC v2021.3](https://www.microchip.com/en-us/products/fpgas-and-plds/fpga-and-soc-design-tools/fpga/libero-software-later-versions#Documents%20and%20Downloads)
+* The PolarFire SoC MSS configurator
 
 Note: Libero SoC also requires a license to run - this demo is supported by the free silver license.
 
@@ -83,17 +83,17 @@ If no arguments are passed and the tools aren't found in the system path the scr
 
 The following arguments are available:
 
-- -LIB_SOC_DIR or --libero_soc_install_directory: This is the path to the installation of Libero on your system, typically /usr/local/microsemi/Libero_SoC_v2021.3/
+* -LIB_SOC_DIR or --libero_soc_install_directory: This is the path to the installation of Libero on your system, typically /usr/local/microsemi/Libero_SoC_v2021.3/
 
-- -SC_DIR or --softconsole_install_directory: This is the path to the installation of SoftConsole on your system, typically /home/[USERNAME]/Microchip/SoftConsole-v2021.3-7.0.0.599/
+* -SC_DIR or --softconsole_install_directory: This is the path to the installation of SoftConsole on your system, typically /home/[USERNAME]/Microchip/SoftConsole-v2021.3-7.0.0.599/
 
-- -LM_LIC or --lm_license_file: This is where Libero should look for a license on your system
+* -LM_LIC or --lm_license_file: This is where Libero should look for a license on your system
 
-- -P or --program: passing this argument and "True" will add an additional stage at the end of script execution where a connected device will be programmed. This assumes that only one device is connected.
+* -P or --program: passing this argument and "True" will add an additional stage at the end of script execution where a connected device will be programmed. This assumes that only one device is connected.
 
-- -U or --design_update: passing this argument and "True" will only get the script to clone the sources and generate a Libero project, clients will not be generated or imported and the Libero flow will not be run. This argument is intended to be used if someone wanted to update the Libero design without running the full flow.
+* -U or --design_update: passing this argument and "True" will only get the script to clone the sources and generate a Libero project, clients will not be generated or imported and the Libero flow will not be run. This argument is intended to be used if someone wanted to update the Libero design without running the full flow.
 
-- -C or --clean: passing this argument and "True" will delete the source and output folders and return the bitstream builder repository to an initial clean state.
+* -C or --clean: passing this argument and "True" will delete the source and output folders and return the bitstream builder repository to an initial clean state.
 
 #### Running the script on Linux
 
@@ -135,15 +135,15 @@ Arguments can be used to overwrite tool paths used and also configure the flow t
 
 The following arguments are available:
 
-- -libero or --libero_soc_executable: This is the path to the installation of Libero on your system, typically C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe
+* -libero or --libero_soc_executable: This is the path to the installation of Libero on your system, typically C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe
 
-- -pfsoc_mss or --polarfire_soc_mss_configurator_executable: This is the path to the installation of the PolarFire SoC MSS configurator on your system, typically C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe
+* -pfsoc_mss or --polarfire_soc_mss_configurator_executable: This is the path to the installation of the PolarFire SoC MSS configurator on your system, typically C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe
 
-- -P or --program: passing this argument and "True" will add an additional stage at the end of script execution where a connected device will be programmed. This assumes that only one device is connected.
+* -P or --program: passing this argument and "True" will add an additional stage at the end of script execution where a connected device will be programmed. This assumes that only one device is connected.
 
-- -U or --design_update: passing this argument and "True" will only get the script to clone the sources and generate a Libero project, clients will not be generated or imported and the Libero flow will not be run. This argument is intended to be used if someone wanted to update the Libero design without running the full flow.
+* -U or --design_update: passing this argument and "True" will only get the script to clone the sources and generate a Libero project, clients will not be generated or imported and the Libero flow will not be run. This argument is intended to be used if someone wanted to update the Libero design without running the full flow.
 
-- -C or --clean: passing this argument and "True" will delete the source and output folders and return the bitstream builder repository to an initial clean state.
+* -C or --clean: passing this argument and "True" will delete the source and output folders and return the bitstream builder repository to an initial clean state.
 
 #### Running the scripts on Windows
 

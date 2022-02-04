@@ -30,4 +30,4 @@ hart-entry-points: {u54_1: '0x80000000'}
 # Case only matters for the ELF path names, not the keywords.
 # 
 payloads:
-  ../../../../output/bare-metal/mpfs-mmuart-interrupt.elf: {exec-addr: '0x80000000', owner-hart: u54_1, priv-mode: prv_m, skip-opensbi: true}
+  ../../../../output/bare-metal/mpfs-mmuart-interrupt.bin: {exec-addr: '0x80000000', owner-hart: u54_1, priv-mode: prv_m, skip-opensbi: true}

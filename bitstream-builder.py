@@ -364,8 +364,8 @@ def make_bare_metal(softconsole_headless, bare_metal_source):
 
     # copy the project artifact to the output directory
     shutil.copyfile(
-        "./sources/bare-metal-examples/driver-examples/mss/mss-mmuart/mpfs-mmuart-interrupt/DDR-Release/mpfs-mmuart-interrupt.elf",
-        "./output/bare-metal/mpfs-mmuart-interrupt.elf")
+        "./sources/bare-metal-examples/driver-examples/mss/mss-mmuart/mpfs-mmuart-interrupt/DDR-Release/mpfs-mmuart-interrupt.bin",
+        "./output/bare-metal/mpfs-mmuart-interrupt.bin")
 
 
 # Generates a HSS payload using the HSS payload generator using a config file
@@ -473,8 +473,8 @@ if __name__ == '__main__':
 
             print("Using pre-built bare metal")
             shutil.copyfile(
-                os.path.join(os.getcwd(), "sources/pre-built-executables/vcs_demo_artifacts/mpfs-mmuart-interrupt.elf"),
-                os.path.join(os.getcwd(), "./output/bare-metal/mpfs-mmuart-interrupt.elf"))
+                os.path.join(os.getcwd(), "sources/pre-built-executables/vcs_demo_artifacts/mpfs-mmuart-interrupt.bin"),
+                os.path.join(os.getcwd(), "./output/bare-metal/mpfs-mmuart-interrupt.bin"))
 
             print("Generating HSS payload")
             make_hss_payload(os.path.join(sources["HSS-payload-generator"], "hss-payload-generator/binaries/"),

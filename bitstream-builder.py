@@ -66,13 +66,13 @@ def parse_args_linux():
 
     # Set up tool paths based on arguments - if not argument is passed and the tool isn't found in path / its own env variable a default path will be used to attempt to run the demo
     user_home = os.path.expanduser("~")
-    if args.Libero_SoC_Install_Directory:
+    if args.libero_soc_install_directory:
         os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.join(
-            str(args.Libero_SoC_Install_Directory) + "Libero/bin/")
+            str(args.libero_soc_install_directory) + "Libero/bin/")
         os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.join(
-            str(args.Libero_SoC_Install_Directory) + "Libero/bin64/")
+            str(args.libero_soc_install_directory) + "Libero/bin64/")
         if os.environ.get('FPGENPROG') is None:
-            os.environ["FPGENPROG"] = os.path.join(str(args.Libero_SoC_Install_Directory) + "Libero/bin64/fpgenprog")
+            os.environ["FPGENPROG"] = os.path.join(str(args.libero_soc_install_directory) + "Libero/bin64/fpgenprog")
     elif "Libero/bin/" not in os.environ["PATH"]:
         print(
             "Libero path not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
@@ -83,19 +83,19 @@ def parse_args_linux():
         print("FPGENPROG enviroment variable is not set - attempting to use default path for v2021.3")
         os.environ["FPGENPROG"] = "/usr/local/microsemi/Libero_SoC_v2021.3/Libero/bin64/fpgenprog"
 
-    if args.SoftConsole_Install_Directory:
+    if args.softconsole_install_directory:
         if os.environ.get('SC_INSTALL_DIR') is None:
-            os.environ["SC_INSTALL_DIR"] = str(args.SoftConsole_Install_Directory)
+            os.environ["SC_INSTALL_DIR"] = str(args.softconsole_install_directory)
         os.environ["PATH"] = os.environ["PATH"] + ":" + os.path.join(
-            str(args.SoftConsole_Install_Directory) + "eclipse/")
+            str(args.softconsole_install_directory) + "eclipse/")
         os.environ["PATH"] = os.environ[
-                                 "PATH"] + ":" + os.path.join(str(args.SoftConsole_Install_Directory) + "python/bin")
-        os.environ["PATH"] = os.environ[
-                                 "PATH"] + ":" + os.path.join(
-            str(args.SoftConsole_Install_Directory) + "riscv-unknown-elf-gcc/bin")
+                                 "PATH"] + ":" + os.path.join(str(args.softconsole_install_directory) + "python/bin")
         os.environ["PATH"] = os.environ[
                                  "PATH"] + ":" + os.path.join(
-            str(args.SoftConsole_Install_Directory) + "eclipse/jre/bin")
+            str(args.softconsole_install_directory) + "riscv-unknown-elf-gcc/bin")
+        os.environ["PATH"] = os.environ[
+                                 "PATH"] + ":" + os.path.join(
+            str(args.softconsole_install_directory) + "eclipse/jre/bin")
     elif "SoftConsole" not in os.environ["PATH"]:
         print(
             "SoftConsole path not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
@@ -111,9 +111,9 @@ def parse_args_linux():
         print("SC_INSTALL_DIR enviroment variable is not set - attempting to use default path for v2021.3")
         os.environ["SC_INSTALL_DIR"] = user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599"
 
-    if args.LM_License_File:
+    if args.lm_license_file:
         os.environ[
-            "LM_LICENSE_FILE"] = str(args.LM_License_File)
+            "LM_LICENSE_FILE"] = str(args.lm_license_file)
 
     # Tool call variables - these are the names of the tools to run which will be called from os.system.
     # Full paths could be used here instead of assuming tools are in PATH
@@ -122,17 +122,17 @@ def parse_args_linux():
     softconsole_headless = "softconsole-headless"
 
     # Set up the run based on flow arguments - used to indicate a design update or if programming is required
-    if "true" in str(args.Program).lower():
+    if "true" in str(args.program).lower():
         programming = True
     else:
         programming = False
 
-    if "true" in str(args.Design_Update).lower():
+    if "true" in str(args.design_update).lower():
         update = True
     else:
         update = False
 
-    if "true" in str(args.Clean).lower():
+    if "true" in str(args.clean).lower():
         clean = True
     else:
         clean = False
@@ -215,32 +215,32 @@ def parse_args_windows():
     args = parser.parse_args()
 
     # Set up tool paths based on arguments - if not argument is passed and the tool isn't found in path / its own env variable a default path will be used to attempt to run the demo
-    if args.Libero_SoC_Executable:
-        libero = args.Libero_SoC_Executable
+    if args.libero_soc_executable:
+        libero = args.libero_soc_executable
     elif "Libero_SoC_v2021.3\\Designer\\bin\\libero.exe" not in os.environ["PATH"]:
         print(
             "Libero executable not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
         libero = "C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe"
 
-    if args.PolarFire_SoC_MSS_Configurator_Executable:
-        mss_configurator = args.PolarFire_SoC_MSS_Configurator_Executable
+    if args.polarfire_soc_mss_configurator_executable:
+        mss_configurator = args.polarfire_soc_mss_configurator_executable
     elif "Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe" not in os.environ["PATH"]:
         print(
             "PolarFire SoC MSS Configurator executable not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
         mss_configurator = "C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe"
 
     # Set up the run based on flow arguments - used to indicate a design update or if programming is required
-    if "true" in str(args.Program).lower():
+    if "true" in str(args.program).lower():
         programming = True
     else:
         programming = False
 
-    if "true" in str(args.Design_Update).lower():
+    if "true" in str(args.design_update).lower():
         update = True
     else:
         update = False
 
-    if "true" in str(args.Clean).lower():
+    if "true" in str(args.clean).lower():
         clean = True
     else:
         clean = False

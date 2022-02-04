@@ -2,7 +2,11 @@
 
 ## Introduction
 
-This repository is used to store the Microchip Bitstream Builder example scripts targeting a PolarFire SoC Icicle Kit bring up design with minimal components and a lightweight configuration to verify device functionality on power up. The demo itself will clone several source repositories, build bare metal applications, generate a Libero design and import the bare metal applications into the project, finally it will generate a bitstream. Using this script, bitsreams can be generated on demand in a fully version controlled environment and reproduced at a later date based on specific tags of the overall script or individual components of the bitstream.
+Using the Icicle Kit Bring Up Design Bitstream Builder, bitsreams can be generated on demand in a fully version controlled environment and reproduced at a later date based on specific tags of the overall script or individual components of the bitstream. The aim of this demo is to provide a example framework which can be used to version control a Libero design.
+
+This example targets the PolarFire SoC Icicle Kit. It creates a bring up design with minimal components and a lightweight configuration to verify device functionality on power up.
+
+The demo itself will clone several source repositories, build a bare metal application and the Hart Software Services, generate a Libero design and import the applications into the project, finally it will generate a bitstream. This bitstream consists of an FPGA fabric and eNVM component and a system controller SPI flash client.
 
 ### Bitstream components
 
@@ -71,7 +75,11 @@ The bitstream builder supports both Windows and Linux hosts, there are more tool
 
 #### Arguments available on Linux
 
-Arguments can be used to overwrite tool paths used and also configure the flow that is used to generate a bitstream. Multiple tools are used in this flow but these are all contained in either the Libero SoC installation or the SoftConsole installation. If one of the arguments shown below is passed all of the tools contained in that installation will be configured automatically by this script (e.g passing the Libero installation also sets the MSS configurator installation path as this is installed with Libero). If no arguments are passed and the tools aren't found in the system path the script will attempt to use the default installation directory for a tool. If a tool isn't present the script will terminate itself before running any tools.
+Arguments can be used to overwrite tool paths used and also configure the flow that is used.
+
+Multiple tools are used in this flow but these are all contained in either the Libero SoC installation or the SoftConsole installation. If one of the arguments shown below is passed all of the tools contained in that installation will be configured automatically by this script (e.g passing the Libero installation also sets the MSS configurator installation path as this is installed with Libero).
+
+If no arguments are passed and the tools aren't found in the system path the script will attempt to use the default installation directory for a tool. If a tool isn't present the script will terminate itself before running any tools.
 
 The following arguments are available:
 
@@ -175,7 +183,9 @@ The following flow is used to produce a Libero bitstream with multiple component
 
 ![tool flow](./tool_flow_linux.svg)
 
-Builds of bare metal projects and the HSS are performed using SoftConsole in headless mode. This allows for a full build using the provided SoftConsole configurations in a project. This also allows access to built in tools like the boot mode programmer which can be used to generate Libero compatible hex files. Payloads are generated using a copy of the HSS payload generator which is downloaded as an asset from the HSS releases. Libero can be called in batch mode to execute a Tcl script without displaying a GUI which is done here.
+Builds of bare metal projects and the HSS are performed using SoftConsole in headless mode. This allows for a full build using the provided SoftConsole configurations in a project. This also allows access to built in tools like the boot mode programmer which can be used to generate Libero compatible hex files.
+
+Payloads are generated using a copy of the HSS payload generator which is downloaded as an asset from the HSS releases. Libero can be called in batch mode to execute a Tcl script without displaying a GUI which is done here.
 
 The flow used in the bitstream-builder python script is:
 
@@ -196,7 +206,9 @@ The following flow is used to produce a Libero bitstream with multiple component
 
 ![tool flow](./tool_flow_windows.svg)
 
-Unlike Linux, SoftConsole is not available headlessly on Windows. This means that bare metal projects can't be built directly. It would be possible to use the Linux version of SoftConsole in a Cygwin shell or WSL but for this demo it is assumed that this is not configured. Therefore bare metal projects are downloaded as prebuilt artifacts in this flow. Payloads are generated using a copy of the HSS payload generator which is downloaded as an asset from the HSS releases. Libero can be called in batch mode to execute a Tcl script without displaying a GUI which is done here.
+Unlike Linux, SoftConsole is not available headlessly on Windows. This means that bare metal projects can't be built directly. It would be possible to use the Linux version of SoftConsole in a Cygwin shell or WSL but for this demo it is assumed that this is not configured. Therefore bare metal projects are downloaded as prebuilt artifacts in this flow.
+
+Payloads are generated using a copy of the HSS payload generator which is downloaded as an asset from the HSS releases. Libero can be called in batch mode to execute a Tcl script without displaying a GUI which is done here.
 
 The flow used in the bitstream-builder python script is:
 

@@ -69,7 +69,7 @@ The bitstream builder supports both Windows and Linux hosts, there are more tool
 
 ### Running the bitstream builder script on Linux
 
-#### Arguments available
+#### Arguments available on Linux
 
 Arguments can be used to overwrite tool paths used and also configure the flow that is used to generate a bitstream. Multiple tools are used in this flow but these are all contained in either the Libero SoC installation or the SoftConsole installation. If one of the arguments shown below is passed all of the tools contained in that installation will be configured automatically by this script (e.g passing the Libero installation also sets the MSS configurator installation path as this is installed with Libero). If no arguments are passed and the tools aren't found in the system path the script will attempt to use the default installation directory for a tool. If a tool isn't present the script will terminate itself before running any tools.
 
@@ -87,9 +87,9 @@ The following arguments are available:
 
 - -C or --clean: passing this argument and "True" will delete the source and output folders and return the bitstream builder repository to an initial clean state.
 
-#### Running the scripts
+#### Running the script on Linux
 
-##### Standard run with no programming
+##### Standard run with no programming on Linux
 
 An example call is shown below to run the script and generate a bitstream:
 
@@ -99,7 +99,7 @@ If all of the required tools are set up and available in the system path the fol
 
 `python3 bitstream-builder.py`
 
-##### Standard run with programming
+##### Standard run with programming on Linux
 
 An example call is shown below to run the script, generate a bitstream and program a connected target:
 
@@ -109,7 +109,7 @@ If all of the required tools are set up and available in the system path the fol
 
 `python3 bitstream-builder.py -P true`
 
-##### Design update run
+##### Design update run on Linux
 
 An example call is shown below to run the script in design update mode where no clients or bitstream are generated, just a Libero design:
 
@@ -121,7 +121,7 @@ If all of the required tools are set up and available in the system path the fol
 
 ### Running the bitstream builder script on Windows
 
-#### Arguments available
+#### Arguments available on Windows
 
 Arguments can be used to overwrite tool paths used and also configure the flow that is used to generate a bitstream. Libero and the MSS configurator are required to run this flow and both tool locations can be passed as arguments. If no arguments are passed and the tools aren't found in the system path the script will attempt to use the default installation directory for a tool. If a tool isn't present the script will terminate itself before running any tools.
 
@@ -137,9 +137,9 @@ The following arguments are available:
 
 - -C or --clean: passing this argument and "True" will delete the source and output folders and return the bitstream builder repository to an initial clean state.
 
-#### Running the scripts
+#### Running the scripts on Windows
 
-##### Standard run with no programming
+##### Standard run with no programming on Windows
 
 An example call is shown below to run the script and generate a bitstream:
 
@@ -149,7 +149,7 @@ If all of the required tools are set up and available in the system path the fol
 
 `python3 bitstream-builder.py`
 
-##### Standard run with programming
+##### Standard run with programming on Windows
 
 An example call is shown below to run the script, generate a bitstream and program a connected target:
 
@@ -159,7 +159,7 @@ If all of the required tools are set up and available in the system path the fol
 
 `python3 bitstream-builder.py -P true`
 
-##### Design update run
+##### Design update run on Windows
 
 An example call is shown below to run the script in design update mode where no clients or bitstream are generated, just a Libero design:
 

@@ -46,19 +46,19 @@ def parse_args_linux():
     parser = argparse.ArgumentParser()
 
     # Adding tool path arguments
-    parser.add_argument("-LIB_SOC_DIR", "--Libero_SoC_Install_Directory",
+    parser.add_argument("-l", "--libero_soc_install_directory",
                         help="Install directory for Libero SoC v2021.3 to be used when running this script. For example: /usr/local/microsemi/Libero_SoC_v2021.2/")
-    parser.add_argument("-SC_DIR", "--SoftConsole_Install_Directory",
+    parser.add_argument("-s", "--softconsole_install_directory",
                         help="Install directory for SoftConsole v2021.3 to be used when running this script. For example: /home/hugh/Microchip/SoftConsole-v2021.3-7.0.0.599/")
-    parser.add_argument("-LM_LIC", "--LM_License_File",
+    parser.add_argument("-L", "--lm_license_file",
                         help="LM License to be used when running Libero as part of this script. For example 1703@localhost")
 
     # Adding flow arguments
-    parser.add_argument("-P", "--Program",
+    parser.add_argument("-P", "--program",
                         help='Passing this argument and "True" will attempt programming of a connected target (Icicle Kit) once the bitstream has been built')
-    parser.add_argument("-U", "--Design_Update",
-                        help='Passing this argument and "True" will run the flow so that a desin is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
-    parser.add_argument("-C", "--Clean",
+    parser.add_argument("-U", "--design_update",
+                        help='Passing this argument and "True" will run the flow so that a design is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
+    parser.add_argument("-C", "--clean",
                         help='Passing this argument and "True" will delete all sources and output files without cloning / building any sources or generating a bitstream.')
 
     # Read arguments from command line
@@ -198,17 +198,17 @@ def parse_args_windows():
     parser = argparse.ArgumentParser()
 
     # Adding tool path arguments
-    parser.add_argument("-libero", "--Libero_SoC_Executable",
+    parser.add_argument("-l", "--libero_soc_executable",
                         help="Location of the Libero SoC v2021.3 executable to be used when running this script. For example: C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe")
-    parser.add_argument("-pfsoc_mss", "--PolarFire_SoC_MSS_Configurator_Executable",
+    parser.add_argument("-p", "--polarfire_soc_mss_configurator_executable",
                         help="Location of the PolarFire SoC MSS Configurator executable to be used when running this script. For example: C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe")
 
     # Adding flow arguments
-    parser.add_argument("-P", "--Program",
+    parser.add_argument("-P", "--program",
                         help='Passing this argument and "True" will attempt programming of a connected target (Icicle Kit) once the bitstream has been built')
-    parser.add_argument("-U", "--Design_Update",
-                        help='Passing this argument will run the flow so that a desin is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
-    parser.add_argument("-C", "--Clean",
+    parser.add_argument("-U", "--design_update",
+                        help='Passing this argument will run the flow so that a design is generated with all of its SmartDesign, HDL and constraint components but will not generate a bitstream, generate eNVM or sNVM clients or run the Libero flow.')
+    parser.add_argument("-C", "--clean",
                         help='Passing this argument and "True" will delete all sources and output files without cloning / building any sources or generating a bitstream.')
 
     # Read arguments from command line

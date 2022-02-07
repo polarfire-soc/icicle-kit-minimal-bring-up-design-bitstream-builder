@@ -401,7 +401,7 @@ def call_libero(libero, script):
     os.system(libero + " SCRIPT:" + script)
 
 
-if __name__ == '__main__':
+def main():
     global libero
     global mss_configurator
     global softconsole_headless
@@ -512,3 +512,7 @@ if __name__ == '__main__':
             "The libero project has been generated and can now be opened by opening the project file in the output/libero_project directory")
 
     print("Finished")
+
+
+if __name__ == '__main__':
+    main()

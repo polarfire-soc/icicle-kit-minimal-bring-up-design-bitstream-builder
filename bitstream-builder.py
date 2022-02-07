@@ -376,7 +376,7 @@ def make_bare_metal(softconsole_headless, bare_metal_source):
 
 
 # Generates a HSS payload using the HSS payload generator using a config file
-def make_hss_payload(payload_generator, config, destination):
+def make_hss_payload(payload_generator, config, source, destination):
     # backup current directory and change in to the payload generator directory
     top_dir = os.getcwd()
     os.chdir(payload_generator)
@@ -488,6 +488,7 @@ def main():
             make_hss_payload(os.path.join(sources["HSS-payload-generator"], "hss-payload-generator/binaries/"),
                              os.path.join(os.getcwd(),
                                           "recipes/hss-payload/config_win.yaml"),
+                            os.path.join(os.getcwd(), "./output/bare-metal/mpfs-mmuart-interrupt.bin"),
                              os.path.join(os.getcwd(), "output/payload/spi.bin"))
 
     print("Generating Libero project")

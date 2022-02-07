@@ -424,6 +424,7 @@ if __name__ == '__main__':
 
     else:
         print("This does not appear to be a supported platform.")
+        exit()
 
     if clean:
         if os.path.exists("./output"):

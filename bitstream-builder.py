@@ -327,6 +327,13 @@ def make_mss_config(mss_configurator, config_file, output_dir):
     os.system(mss_configurator + ' -CONFIGURATION_FILE:' + config_file + ' -OUTPUT_DIR:' + output_dir)
 
 
+def check_native_platform():
+    if os.path.isfile('/.dockerenv'):
+        return ""
+    else:
+        return " --native"
+
+
 # Builds the HSS using a pre-defined config file using SoftConsole in headless mode
 def make_hss(hss_source):
     # Update XML in HSS project
@@ -341,7 +348,7 @@ def make_hss(hss_source):
     workspace = " --workspace=" + os.path.join(os.getcwd(), "output", "bare-metal", "workspace")
     project = " --import=" + hss_source
     build = " --build=hart-software-services/Default"
-    native = " --native"
+    native = check_native_platform()
     softconsole_call = workspace + project + build + native
     os.system(softconsole_headless + softconsole_call)
 
@@ -356,7 +363,7 @@ def make_bare_metal(softconsole_headless, bare_metal_source):
     workspace = " --workspace=" + os.path.join(os.getcwd(), "output", "bare-metal", "workspace")
     project = " --import=" + os.path.join(bare_metal_source, "driver-examples/mss/mss-mmuart/mpfs-mmuart-interrupt/")
     build = " --build=mpfs-mmuart-interrupt/DDR-Release"
-    native = " --native"
+    native = check_native_platform()
     softconsole_call = workspace + project + build + native
 
     # build the project

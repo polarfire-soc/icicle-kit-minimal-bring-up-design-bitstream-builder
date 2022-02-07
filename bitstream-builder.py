@@ -468,7 +468,7 @@ def main():
             print("Generating HSS payload")
             make_hss_payload(os.path.abspath(os.path.join(os.getcwd(), (sources["HSS-payload-generator"]), "hss-payload-generator/binaries/")),
                              os.path.join(os.getcwd(),
-                                          "recipes/hss-payload/config_lin.yaml"),
+                                          "recipes/hss-payload/config.yaml"),
                              os.path.join(os.getcwd(), "./output/bare-metal/"),
                              os.path.join(os.getcwd(), "output/payload/spi.bin"))
 
@@ -489,7 +489,7 @@ def main():
             print("Generating HSS payload")
             make_hss_payload(os.path.abspath(os.path.join(os.getcwd(), (sources["HSS-payload-generator"]), "hss-payload-generator/binaries/")),
                              os.path.join(os.getcwd(),
-                                          "recipes/hss-payload/config_win.yaml"),
+                                          "recipes/hss-payload/config.yaml"),
                              os.path.join(os.getcwd(), "./output/bare-metal/"),
                              os.path.join(os.getcwd(), "output/payload/spi.bin"))
 

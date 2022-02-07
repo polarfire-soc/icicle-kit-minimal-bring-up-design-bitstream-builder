@@ -183,7 +183,7 @@ If all of the required tools are set up and available in the system path the fol
 
 The following flow is used to produce a Libero bitstream with multiple components:
 
-![tool flow](./tool_flow_linux.svg)
+![tool flow](./diagrams/tool_flow_linux.svg)
 
 Builds of bare metal projects and the HSS are performed using SoftConsole in headless mode. This allows for a full build using the provided SoftConsole configurations in a project. This also allows access to built in tools like the boot mode programmer which can be used to generate Libero compatible hex files.
 
@@ -206,7 +206,7 @@ The flow used in the bitstream-builder python script is:
 
 The following flow is used to produce a Libero bitstream with multiple components:
 
-![tool flow](./tool_flow_windows.svg)
+![tool flow](./diagrams/tool_flow_windows.svg)
 
 Unlike Linux, SoftConsole is not available headlessly on Windows. This means that bare metal projects can't be built directly. It would be possible to use the Linux version of SoftConsole in a Cygwin shell or WSL but for this demo it is assumed that this is not configured. Therefore bare metal projects are downloaded as prebuilt artifacts in this flow.
 

@@ -391,7 +391,7 @@ def make_hss_payload(payload_generator, config, source, destination):
         os.system(os.path.normpath(payload_generator + "/hss-payload-generator") + " -c " + config + " " + destination)
 
     else:
-        os.system("hss-payload-generator.exe -c " + config + " " + destination)
+        os.system(os.path.normpath(payload_generator + "/hss-payload-generator.exe") + " -c " + config + " " + destination)
 
     # Change back to the original directory
     os.chdir(top_dir)
@@ -487,10 +487,10 @@ def main():
                 os.path.join(os.getcwd(), "./output/bare-metal/mpfs-mmuart-interrupt.bin"))
 
             print("Generating HSS payload")
-            make_hss_payload(os.path.join(sources["HSS-payload-generator"], "hss-payload-generator/binaries/"),
+            make_hss_payload(os.path.abspath(os.path.join(os.getcwd(), (sources["HSS-payload-generator"]), "hss-payload-generator/binaries/")),
                              os.path.join(os.getcwd(),
                                           "recipes/hss-payload/config_win.yaml"),
-                            os.path.join(os.getcwd(), "./output/bare-metal/mpfs-mmuart-interrupt.bin"),
+                             os.path.join(os.getcwd(), "./output/bare-metal/"),
                              os.path.join(os.getcwd(), "output/payload/spi.bin"))
 
     print("Generating Libero project")

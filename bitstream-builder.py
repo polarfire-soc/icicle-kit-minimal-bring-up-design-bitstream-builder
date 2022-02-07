@@ -378,16 +378,17 @@ def make_bare_metal(softconsole_headless, bare_metal_source):
 # Generates a HSS payload using the HSS payload generator using a config file
 def make_hss_payload(payload_generator, config, source, destination):
     # backup current directory and change in to the payload generator directory
+    print(payload_generator)
     top_dir = os.getcwd()
-   # os.chdir(payload_generator)
+    os.chdir(source)
 
     # Switch here for Windows or Linux for the tool call
     if platform.system() == "Linux" or platform.system() == "Linux2":
         # make sure the tool is executable (we download and extract it as a zip source)
-        os.system("chmod +x " + os.path.join(payload_generator, "hss-payload-generator"))
+        os.system("chmod +x " + os.path.normpath(payload_generator + "/hss-payload-generator"))
 
         # Generate the payload with the output going to the output directory
-        os.system(os.path.join(payload_generator, "hss-payload-generator") + " -c " + config + " " + destination)
+        os.system(os.path.normpath(payload_generator + "/hss-payload-generator") + " -c " + config + " " + destination)
 
     else:
         os.system("hss-payload-generator.exe -c " + config + " " + destination)
@@ -465,9 +466,10 @@ def main():
             make_bare_metal(softconsole_headless, sources["bare-metal-examples"])
 
             print("Generating HSS payload")
-            make_hss_payload(os.path.join(sources["HSS-payload-generator"], "hss-payload-generator/binaries/"),
+            make_hss_payload(os.path.abspath(os.path.join(os.getcwd(), (sources["HSS-payload-generator"]), "hss-payload-generator/binaries/")),
                              os.path.join(os.getcwd(),
                                           "recipes/hss-payload/config_lin.yaml"),
+                             os.path.join(os.getcwd(), "./output/bare-metal/"),
                              os.path.join(os.getcwd(), "output/payload/spi.bin"))
 
         # If we're on Windows use the pre-built HSS and bare metal executables.

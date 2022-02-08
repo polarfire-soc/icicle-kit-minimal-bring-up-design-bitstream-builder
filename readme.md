@@ -1,4 +1,4 @@
-# Icicle Kit Bring Up Design Bitstream Builder Readme
+device# Icicle Kit Bring Up Design Bitstream Builder Readme
 
 ## Introduction
 
@@ -221,7 +221,7 @@ The flow used in the bitstream-builder python script is:
 5. Export final files from Libero
 6. Program a target if required
 
-## Sources
+## Using sources.yaml
 
 All sources used in a run are cloned or downloaded into the sources directory - this directory will be created on the first run.
 
@@ -262,3 +262,125 @@ If, for example, an update is made to a source, the sources.yaml should be updat
 ### Modifying sources and pushing changes
 
 All git sources are cloned into the sources repository. If these need to be modified branches can be created and commits made and pushed from the individual repositories in the sources directory.
+
+## Sources used in this demo
+
+There are five sources used in this demo:
+
+* **pre-built-executables**:
+  * This source is an archive containing prebuilt copies of the HSS and mmuart-interrupt bare metal examples.
+  * These are only used on Windows as SoftConsole isn't used to headlessly build bare metal targets on that platform.
+  * this source is downloaded directly and not cloned using Git. It is assumed that the link to the source points to a specific release / version of the artifact and a new link would be used to change the version of the assets downloaded.
+
+* **HSS**:
+  * This source is the git repository of the Hart Software Services. The HSS is used as a zero-stage boot loader.
+  * It is also available as a system monitor where it:
+      * checks watchdogs
+      * scrubs memories
+      * checks the BEU
+  * It can also be used to boot AMP, and it provides an SBI interface to its boot images.
+  * The HSS bare metal project is only used in this demo when the host PC is running Linux.
+  * A configuration file for the HSS is included in this repository to be used in the build. It can be found in recipes/HSS/spi-boot-hss.config.
+
+* **HSS-payload-generator**:
+  * This source is an archive containing the HSS payload generator.
+  * This tool is used to package individual or multiple binary files into a payload (aka container) that can be detected and booted by the HSS on startup.
+    * The payload (container) is a bootable AMP image, which includes information on what binaries to run on what sets of harts.
+  * A configuration file for the payload generator is included in this repository. It can be found in recipes/hss-payload/config.yaml.
+
+* **HDL**:
+  * This source is a git repository containing the Libero design (in reality Tcl scripts that describe a design), MSS configuration and constraints.
+  * The MSS configuration is used to generate an MSS component and XML.
+  * The Libero design scripts are called by the infrastructure Tcl scripts contained in this repository.
+    * I.e the Tcl scripts contained in the bitsream-builder repository do not describe a design, they run the Libero flow. The Tcl scripts in the HDL repository actually describe the design that will be produced but do not run the Libero flow.
+  * The constraints are imported to the Libero project that is created using the infrastructure Tcl scripts in this repository.
+
+* **bare-metal-examples**:
+  * This source is a git repository containing the PolarFire SoC bare metal examples.
+  * This repository contains example programs for different peripherals and drivers available for PolarFire SoC.
+  * Each example contains pre-configured build configurations and linker scripts for different memory targets.
+  * Only the mmuart-interrupt example is used from this repository. It will only be used when the host PC is running Linux as SoftConsole is used to build the example headlessly.
+
+## Updating the script output
+
+### Introduction
+
+The primary goal of this demo is to demonstrate how to version control the components of an FPGA bitstream. This is achieved using a Python script, a sources yaml file, Tcl scripts and configuration files stored in this repository.
+
+The Python script (bitstream-builder.py):
+  * Sets up the environment to generate the FPGA bitstream
+  * Clones the sources needed to generate the bitstream
+  * Calls the tools required to generate any components using included configuration files
+  * Uses included Tcl scripts to run the Libero design flow and generate a design
+
+The steps run in the Python script are version controlled by this repository, changes to the flow can be tracked in commits. The design sources are stored in the icicle-kit-minimal-bring-up-design-hdl-src repository.
+
+In this demo an FPGA design called the Icicle Kit Bring Up Design will be generated. The FPGA design is a component of the final bitstream. There are also several software, and potentially, user data clients that can be components of the bitstream. This bitstream is constructed in a Libero project.
+
+Typically software sources are version controlled and there are several examples of how to achieve this shown in the PolarFire SoC GitHub organization. The design version control is achieved using Git and Tcl scripts, in a similar method to the Icicle Kit Reference Design.
+
+The Icicle Kit Bring Up Design has one MSS UART enabled and connected to fabric I/O which is connected to a CP2108 on the Icicle Kit.
+
+### Design flow
+
+When the bitstream-builder script is run the icicle-kit-minimal-bring-up-design-hdl-src repository will be cloned. Software sources are built and payloads are generated. The design will be generated and the FPGA design flow (synthesis, place & route etc) is then run.
+
+Non-FPGA bitstream clients are then imported into the Libero project.
+
+Design reports and bitstream components (e.g a FlashPro Express job and digest file) are exported into the output/final-files directory. Optionally an additional step of programming an attached target can be run by passing the programing argument.
+
+### Updating the Libero design
+
+#### Cloning sources and generating the Libero project
+
+If the bitstream-builder has been run a copy of the icicle-kit-minimal-bring-up-design-hdl-src repository will have been cloned into the sources directly. Note: the folder name the repository is cloned into in the sources directory will match the name given to it in the sources.yaml file and not the repository name.
+
+If the bitstream-builder script has not been run, running the script and passing the update argument will clone the sources and generate a copy of the Libero design but not run the design flow or generate any software components. This to allow for a quick set up run.
+
+Once the script has been run, a copy of the Libero project can be found in the output/libero-project directory.
+
+#### Modifying the design
+
+In this demo the SmartDesign created in the project is called "base", there is a "base" directory in the icicle-kit-minimal-bring-up-design-hdl-src repository. This directory is automatically generated by Libero when a "Hierarchical Export Component Description (Tcl)" command is run on the SmartDesign generated in the Libero project.
+
+To update the design, a branch / fork of the existing icicle-kit-minimal-bring-up-design-hdl-src repository should be created. This can be checked out in the local copy of the icicle-kit-minimal-bring-up-design-hdl-src repository in the sources directory, or, in a local copy elsewhere on the PC.
+
+Then the Libero SmartDesign can be updated to meet users requirements and an export can be run into the new copy of the icicle-kit-minimal-bring-up-design-hdl-src directory to overwrite the existing "base" directory.
+
+These changes can then be committed and pushed.
+
+The sources.yaml file should be updated to point to the branch / fork of the icicle-kit-minimal-bring-up-design-hdl-src repository that contains the design changes.
+
+The bitstream-builder script can then be re-run and the updated design will be reproduced.
+
+To keep track of the updated sources.yaml file a branch / fork of the bitstream-builder repository can also be made and updates committed.
+
+#### Modifying the MSS configuration
+
+This demo uses a PolarFire SoC MSS component, although this is not necessary in all cases.
+
+The MSS configuration can be updated by creating a branch / fork of the icicle-kit-minimal-bring-up-design-hdl-src repository. This can be checked out in the local copy of the icicle-kit-minimal-bring-up-design-hdl-src repository in the sources directory, or, in a local copy elsewhere on the PC.
+
+The existing MSS configuration can be opened using the MSS configurator and any required changes made. The updated MSS configuration can be saved the updated configuration file committed back to the repository.
+
+#### Modifying the design constraints
+
+The design constraints can be updated by creating a branch / fork of the icicle-kit-minimal-bring-up-design-hdl-src repository. This can be checked out in the local copy of the icicle-kit-minimal-bring-up-design-hdl-src repository in the sources directory, or, in a local copy elsewhere on the PC.
+
+The existing constraints file can be edited required changes made. The updated constraints file can be saved committed back to the repository.
+
+If additional constraint files are added these can be committed icicle-kit-minimal-bring-up-design-hdl-src repository too. They will also need to be imported by the recipes/libero-project/constraints.tcl script and this modification should be tracked using the methodology described in the Tracking bitstream-builder modifications section.
+
+### Tracking bitstream-builder modifications
+
+If a custom or updated design flow is required, this repository can be forked modifications to the bitstream-builder tracked.
+
+Updating the design flow can be achieved by modifying the bitstream-builder python script itself, to generate additional clients for example. The configuration files for these clients can be stored in the recipes/ directory.
+
+The Libero flow can be updated by modifying the Tcl scripts in the recipes/libero-project directory, for example to change a tool configuration.
+
+An updated design can be generated by following the steps shown above using a separate HDL repository so the design and the design generation version control are separated.
+
+### Supported device families
+
+The bitstream-builder methodology is a methodology of version controlling bitstream components, there are many ways to achieve this goal. This methodology should be supported by all Igloo2, SmartFusion2, PolarFire and PolarFire SoC projects.

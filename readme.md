@@ -1,12 +1,10 @@
-device# Icicle Kit Bring Up Design Bitstream Builder Readme
+# Icicle Kit Bring Up Design Bitstream Builder Readme
 
 ## Introduction
 
-Using the Icicle Kit Bring Up Design Bitstream Builder, bitsreams can be generated on demand in a fully version controlled environment and reproduced at a later date based on specific tags of the overall script or individual components of the bitstream. The aim of this demo is to provide a example framework which can be used to version control a Libero design.
+The Icicle Kit Bring Up Design Bitstream Builder is a fully version controlled design flow that allows users to rebuild FPGA bitstreams with matching digests based on specific tags of version controlled sources. The aim of this demo is to provide an example methodology which can be used to create a version controlled Libero project / design flow.
 
-This example targets the PolarFire SoC Icicle Kit. It creates a bring up design with minimal components and a lightweight configuration to verify device functionality on power up.
-
-The demo itself will clone several source repositories, build a bare metal application and the Hart Software Services, generate a Libero design and import the applications into the project, finally it will generate a bitstream. This bitstream consists of an FPGA fabric and eNVM component and a system controller SPI flash client.
+This example targets the PolarFire SoC Icicle Kit. It uses a Python script to clone several source repositories, build a bare metal application and the Hart Software Services, generate a Libero design and import the applications into the project, finally it will generate a bitstream. This bitstream consists of an FPGA fabric, eNVM client and a system controller SPI flash client.
 
 ### Bitstream components
 

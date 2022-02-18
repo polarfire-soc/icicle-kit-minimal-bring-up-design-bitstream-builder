@@ -5,8 +5,8 @@ pre-built-executables:
 HSS:
     type: git
     link: https://bitbucket.microchip.com/scm/fpga_pfsoc_es/hart-software-services.git
-    branch: develop
-    commit: 30bde64fe43
+    branch: develop-softconsole-windows-fix
+    commit: 63a8eee608d
 HSS-payload-generator:
     type: zip
     link: https://github.com/polarfire-soc/hart-software-services/releases/latest/download/hss-payload-generator.zip

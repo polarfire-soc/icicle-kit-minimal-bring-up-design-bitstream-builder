@@ -33,6 +33,17 @@ import requests
 import yaml
 
 
+# Deletes all generated directories and exits the script
+def clean():
+    if os.path.exists("./output"):
+        shutil.rmtree('./output')
+    if os.path.exists("./sources"):
+        shutil.rmtree('./sources')
+
+    print("All generated folders have been removed, the script will now exit.")
+    exit()
+
+
 # Parse command line arguments and set tool locations
 def parse_args_linux():
     global libero
@@ -40,7 +51,6 @@ def parse_args_linux():
     global softconsole_headless
     global programming
     global update
-    global clean
 
     # Initialize parser
     parser = argparse.ArgumentParser()
@@ -63,6 +73,10 @@ def parse_args_linux():
 
     # Read arguments from command line
     args = parser.parse_args()
+    
+    # Check if clean is passed first so no other checks take place    
+    if "true" in str(args.clean).lower():
+        clean()
 
     # Set up tool paths based on arguments - if not argument is passed and the tool isn't found in path / its own env variable a default path will be used to attempt to run the demo
     user_home = os.path.expanduser("~")
@@ -132,11 +146,6 @@ def parse_args_linux():
     else:
         update = False
 
-    if "true" in str(args.clean).lower():
-        clean = True
-    else:
-        clean = False
-
 
 # Checks to see if all of the required tools are installed and present in path, if a needed tool isn't available the script will exit
 def check_tool_status_linux():
@@ -192,7 +201,6 @@ def parse_args_windows():
     global mss_configurator
     global programming
     global update
-    global clean
 
     # Initialize parser
     parser = argparse.ArgumentParser()
@@ -213,6 +221,10 @@ def parse_args_windows():
 
     # Read arguments from command line
     args = parser.parse_args()
+    
+    # Check if clean is passed first so no other checks take place    
+    if "true" in str(args.clean).lower():
+        clean()
 
     # Set up tool paths based on arguments - if not argument is passed and the tool isn't found in path / its own env variable a default path will be used to attempt to run the demo
     if args.libero_soc_executable:
@@ -407,8 +419,6 @@ def main():
     global mss_configurator
     global softconsole_headless
     global programming
-    global update
-    global clean
 
     # Check host system
     print("This is a " + platform.system() + " system.")
@@ -432,14 +442,6 @@ def main():
 
     else:
         print("This does not appear to be a supported platform.")
-        exit()
-
-    if clean:
-        if os.path.exists("./output"):
-            shutil.rmtree('./output')
-        if os.path.exists("./sources"):
-            shutil.rmtree('./sources')
-
         exit()
 
     sources = {}

@@ -267,11 +267,6 @@ def parse_args_windows():
     else:
         update = False
 
-    if "true" in str(args.clean).lower():
-        clean = True
-    else:
-        clean = False
-
 
 # Checks to see if all of the required tools are installed, if a needed tool isn't available the script will exit
 def check_tool_status_windows():

@@ -186,11 +186,6 @@ def check_tool_status_linux():
 
     path = os.environ["PATH"]
 
-    if "/python/bin" not in path:
-        print(
-            "The path to the SoftConsole python installation needs to be set in PATH to run this script")
-        exit()
-
     if "/riscv-unknown-elf-gcc/bin" not in path:
         print(
             "The path to the RISC-V toolchain needs to be set in PATH to run this script")

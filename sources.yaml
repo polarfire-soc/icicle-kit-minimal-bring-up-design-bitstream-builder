@@ -4,16 +4,16 @@ pre-built-executables:
     link: https://microchiptechnology-my.sharepoint.com/:u:/g/personal/hugh_breslin_microchip_com/EYyolGZ8WHdLvTVFi5EZmgoBpSTRTRuHXPk4GWRvYbl3GA?e=6MXSai&download=1
 HSS:
     type: git
-    link: https://bitbucket.microchip.com/scm/fpga_pfsoc_es/hart-software-services.git
-    branch: develop-softconsole-windows-fix
+    link: https://github.com/polarfire-soc/hart-software-services.git
+    branch: master
     commit: 63a8eee608d
 HSS-payload-generator:
     type: zip
-    link: https://github.com/polarfire-soc/hart-software-services/releases/latest/download/hss-payload-generator.zip
+    link: https://github.com/polarfire-soc/hart-software-services/releases/download/2021.11/hss-payload-generator.zip
 HDL:
     type: git
-    link: https://bitbucket.microchip.com/scm/fpga_pfsoc_es/icicle-kit-minimal-bring-up-design-src.git
-    branch: initial-work
+    link: https://github.com/polarfire-soc/icicle-kit-minimal-bring-up-design-hdl-src.git
+    branch: main
     commit: 9e966085bab
 bare-metal-examples:
     type: git

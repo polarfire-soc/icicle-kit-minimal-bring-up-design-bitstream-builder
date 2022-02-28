@@ -283,6 +283,18 @@ def check_tool_status_windows():
         print("Error: polarfire soc mss configurator not found")
         exit()
 
+    path_length = os.getcwd()
+
+    if len(path_length) > 40:
+        print("Warning: the path length to the folder containing this script is too long.")
+        print("The maximum allowable preceding path length is 40 characters.")
+        print("The current preceding path length is " + str(len(path_length)) + " characters.")
+        print("If long paths are enabled on Windows this warning can be ignored.")
+        print("Otherwise please reduce the path length to this script.")
+        long_paths_enabled = input("Would you like to continue (only if long paths are enabled)? y/n ")
+        if "n" in long_paths_enabled.lower():
+            exit()
+
 
 # Creates required folders and removes artifacts before beginning
 def init_workspace():

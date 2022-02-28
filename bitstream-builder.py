@@ -44,6 +44,13 @@ def clean():
     exit()
 
 
+def check_native_platform():
+    if os.path.isfile('/.dockerenv'):
+        return ""
+    else:
+        return " --native"
+
+
 # Parse command line arguments and set tool locations
 def parse_args_linux():
     global libero
@@ -194,6 +201,19 @@ def check_tool_status_linux():
             "The path to the SoftConsole Java installation needs to be set in PATH to run this script")
         exit()
 
+    if "--native" in check_native_platform():
+        print("")
+        print("Warning a native platform has been detected.")
+        print("The headless version of SoftConsole used by this script is not recommended for native platforms.")
+        print("This script has been tested on multiple platforms and no issues have been seen using SoftConsole headlessly.")
+        print("It is advised to consult the SoftConsole headless help for more information.")
+        input("Press enter to view the help")
+        os.system("softconsole-headless")
+        print('Running this script on this machine will pass the "--native" flag when running SoftConsole.')
+        ignore_headless_warning = input("Would you like to continue? y/n ")
+        if "n" in ignore_headless_warning.lower():
+            exit()
+
 
 # Parse command line arguments and set tool locations
 def parse_args_windows():
@@ -337,13 +357,6 @@ def clone_sources(source_list):
 # calls the MSS configurator and generates an MSS configuration in a directory based on a cfg file
 def make_mss_config(mss_configurator, config_file, output_dir):
     os.system(mss_configurator + ' -CONFIGURATION_FILE:' + config_file + ' -OUTPUT_DIR:' + output_dir)
-
-
-def check_native_platform():
-    if os.path.isfile('/.dockerenv'):
-        return ""
-    else:
-        return " --native"
 
 
 # Builds the HSS using a pre-defined config file using SoftConsole in headless mode

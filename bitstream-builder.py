@@ -1,4 +1,4 @@
-# The Microchip Bitstream Builder is released under the following software licese:
+# The Microchip Bitstream Builder is released under the following software license:
 
 #  Copyright 2021 Microchip Corporation.
 #  SPDX-License-Identifier: MIT
@@ -80,8 +80,8 @@ def parse_args_linux():
 
     # Read arguments from command line
     args = parser.parse_args()
-    
-    # Check if clean is passed first so no other checks take place    
+
+    # Check if clean is passed first so no other checks take place
     if "true" in str(args.clean).lower():
         clean()
 
@@ -96,12 +96,12 @@ def parse_args_linux():
             os.environ["FPGENPROG"] = os.path.join(str(args.libero_soc_install_directory) + "Libero/bin64/fpgenprog")
     elif "Libero/bin/" not in os.environ["PATH"]:
         print(
-            "Libero path not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
+            "Libero path not passed as an argument or found in the system path - attempting to use the default path for v2021.3")
         os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.3/Libero/bin/"
         os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.3/Libero/bin64/"
 
     if os.environ.get('FPGENPROG') is None:
-        print("FPGENPROG enviroment variable is not set - attempting to use default path for v2021.3")
+        print("FPGENPROG environment variable is not set - attempting to use default path for v2021.3")
         os.environ["FPGENPROG"] = "/usr/local/microsemi/Libero_SoC_v2021.3/Libero/bin64/fpgenprog"
 
     if args.softconsole_install_directory:
@@ -119,7 +119,7 @@ def parse_args_linux():
             str(args.softconsole_install_directory) + "eclipse/jre/bin")
     elif "SoftConsole" not in os.environ["PATH"]:
         print(
-            "SoftConsole path not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
+            "SoftConsole path not passed as an argument or found in the system path - attempting to use the default path for v2021.3")
         os.environ["PATH"] = os.environ["PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/"
         os.environ["PATH"] = os.environ[
                                  "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/python/bin"
@@ -129,7 +129,7 @@ def parse_args_linux():
                                  "PATH"] + ":" + user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599/eclipse/jre/bin"
 
     if os.environ.get('SC_INSTALL_DIR') is None:
-        print("SC_INSTALL_DIR enviroment variable is not set - attempting to use default path for v2021.3")
+        print("SC_INSTALL_DIR environment variable is not set - attempting to use default path for v2021.3")
         os.environ["SC_INSTALL_DIR"] = user_home + "/Microchip/SoftConsole-v2021.3-7.0.0.599"
 
     if args.lm_license_file:
@@ -174,13 +174,13 @@ def check_tool_status_linux():
 
     if os.environ.get('SC_INSTALL_DIR') is None:
         print(
-            "Error: SC_INSTALL_DIR enviroment variable not set, please set this variable and point it to the "
-            "appropriate SoftConsole insatllation directory to run this script")
+            "Error: SC_INSTALL_DIR environment variable not set, please set this variable and point it to the "
+            "appropriate SoftConsole installation directory to run this script")
         exit()
 
     if os.environ.get('FPGENPROG') is None:
         print(
-            "Error: FPGENPROG enviroment variable not set, please set this variable and point it to the appropriate "
+            "Error: FPGENPROG environment variable not set, please set this variable and point it to the appropriate "
             "FPGENPROG executable to run this script")
         exit()
 
@@ -200,7 +200,8 @@ def check_tool_status_linux():
         print("")
         print("Warning a native platform has been detected.")
         print("The headless version of SoftConsole used by this script is not recommended for native platforms.")
-        print("This script has been tested on multiple platforms and no issues have been seen using SoftConsole headlessly.")
+        print(
+            "This script has been tested on multiple platforms and no issues have been seen using SoftConsole headlessly.")
         print("It is advised to consult the SoftConsole headless help for more information.")
         input("Press enter to view the help")
         os.system("softconsole-headless")
@@ -236,7 +237,7 @@ def parse_args_windows():
 
     # Read arguments from command line
     args = parser.parse_args()
-    
+
     # Check if clean is passed first so no other checks take place    
     if "true" in str(args.clean).lower():
         clean()
@@ -246,14 +247,14 @@ def parse_args_windows():
         libero = args.libero_soc_executable
     elif "Libero_SoC_v2021.3\\Designer\\bin\\libero.exe" not in os.environ["PATH"]:
         print(
-            "Libero executable not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
+            "Libero executable not passed as an argument or found in the system path - attempting to use the default path for v2021.3")
         libero = "C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin\\libero.exe"
 
     if args.polarfire_soc_mss_configurator_executable:
         mss_configurator = args.polarfire_soc_mss_configurator_executable
     elif "Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe" not in os.environ["PATH"]:
         print(
-            "PolarFire SoC MSS Configurator executable not passed as an argument or found in the system path - attampting to use the default path for v2021.3")
+            "PolarFire SoC MSS Configurator executable not passed as an argument or found in the system path - attempting to use the default path for v2021.3")
         mss_configurator = "C:\\Microsemi\\Libero_SoC_v2021.3\\Designer\\bin64\\pfsoc_mss.exe"
 
     # Set up the run based on flow arguments - used to indicate a design update or if programming is required
@@ -302,7 +303,7 @@ def init_workspace():
     if os.path.exists("./output"):
         shutil.rmtree('./output')
 
-    # Create each output sub-directory
+    # Create each output subdirectory
     os.mkdir("./output")
     os.mkdir("./output/MSS")
     os.mkdir("./output/HSS")
@@ -418,7 +419,8 @@ def make_hss_payload(payload_generator, config, source, destination):
         os.system(os.path.normpath(payload_generator + "/hss-payload-generator") + " -c " + config + " " + destination)
 
     else:
-        os.system(os.path.normpath(payload_generator + "/hss-payload-generator.exe") + " -c " + config + " " + destination)
+        os.system(
+            os.path.normpath(payload_generator + "/hss-payload-generator.exe") + " -c " + config + " " + destination)
 
     # Change back to the original directory
     os.chdir(top_dir)
@@ -483,7 +485,8 @@ def main():
             make_bare_metal(softconsole_headless, sources["bare-metal-examples"])
 
             print("Generating HSS payload")
-            make_hss_payload(os.path.abspath(os.path.join(os.getcwd(), (sources["HSS-payload-generator"]), "hss-payload-generator/binaries/")),
+            make_hss_payload(os.path.abspath(
+                os.path.join(os.getcwd(), (sources["HSS-payload-generator"]), "hss-payload-generator/binaries/")),
                              os.path.join(os.getcwd(),
                                           "recipes/hss-payload/config.yaml"),
                              os.path.join(os.getcwd(), "./output/bare-metal/"),
@@ -504,7 +507,8 @@ def main():
                 os.path.join(os.getcwd(), "./output/bare-metal/mpfs-mmuart-interrupt.bin"))
 
             print("Generating HSS payload")
-            make_hss_payload(os.path.abspath(os.path.join(os.getcwd(), (sources["HSS-payload-generator"]), "hss-payload-generator/binaries/")),
+            make_hss_payload(os.path.abspath(
+                os.path.join(os.getcwd(), (sources["HSS-payload-generator"]), "hss-payload-generator/binaries/")),
                              os.path.join(os.getcwd(),
                                           "recipes/hss-payload/config.yaml"),
                              os.path.join(os.getcwd(), "./output/bare-metal/"),

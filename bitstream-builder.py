@@ -94,7 +94,7 @@ def parse_args_linux():
             str(args.libero_soc_install_directory) + "Libero/bin64/")
         if os.environ.get('FPGENPROG') is None:
             os.environ["FPGENPROG"] = os.path.join(str(args.libero_soc_install_directory) + "Libero/bin64/fpgenprog")
-    elif "Libero/bin/" not in os.environ["PATH"]:
+    elif "Libero/bin" not in os.environ["PATH"]:
         print(
             "Libero path not passed as an argument or found in the system path - attempting to use the default path for v2021.3")
         os.environ["PATH"] = os.environ["PATH"] + ":" + "/usr/local/microsemi/Libero_SoC_v2021.3/Libero/bin/"
